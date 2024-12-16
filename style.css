@@ -1,0 +1,16 @@
+.conteudo{
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 20px;
+    padding: 2px;
+}
+
+.conteudo__interface{
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
