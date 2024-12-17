@@ -7,13 +7,23 @@
     padding: 2px;
 }
 
-.conteudo__interface{
+.conteudo__botoes{
     align-items: center;
     display: flex;
     flex-direction: column;
     margin: 10px;
 }
 
+.conteudo_interface{
+    display: flex;
+    flex-direction: column;
+    margin: 4px;
+}
+
 .btn{
     margin: 10px;
+}
+
+.invisivel{
+    display:none
 }

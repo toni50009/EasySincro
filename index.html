@@ -16,11 +16,12 @@
                     Se por acaso, você tiver mais uma "divisão" de horários distintos, então terá 3 grupos.
             </p>
     </section>      
-        <section class="conteudo__interface">
-            <button class="btn" onclick="criarColunas()">2 Grupos</button>
-            <button class="btn" onclick="criarColunas()">3 Grupos</button>
-            <button class="btn" onclick="criarColunas()">4 Grupos</button>
+        <section class="conteudo__botoes">
+            <input type="number" id="digitarGrupos" min="2" max="4">
+            <button class="btn" id="botaoGrupo" onclick="criarGrupos()">Próximo</button>
         </section>
+            <section class="conteudo__interface">
+            </section>
     <script src="app.js"></script>
 </body>
 </html>
