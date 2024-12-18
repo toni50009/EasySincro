@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasySincronismo</title>
     <link rel="stylesheet" href="style.css" >
+    <script src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
 </head>
 <body class="conteudo">
     <section class="conteudo__informacoes">
@@ -17,8 +18,12 @@
             </p>
     </section>      
         <section class="conteudo__botoes">
-            <input type="number" id="digitarGrupos" min="2" max="4">
-            <button class="btn" id="botaoGrupo" onclick="criarGrupos()">Próximo</button>
+            <div class="conteudo__quantidade">
+                <span class="minus">-</span>
+                <input type="number" id="digitarGrupos" min="2" max="4" value="2">
+                <span class="plus">+</span>
+            </div>
+            <button class="btn" id="botaoGrupo" onclick="criarGrupos()">Proximo</button>
         </section>
             <section class="conteudo__interface">
             </section>
