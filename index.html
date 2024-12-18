@@ -5,28 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EasySincronismo</title>
     <link rel="stylesheet" href="style.css" >
-    <script src="https://code.jquery.com/jquery-1.7.1.min.js"></script>
 </head>
 <body class="conteudo">
-    <section class="conteudo__informacoes">
-        <h1 class="conteudo__informacoes__descricao">Em quantos Grupos são divididos as diferenças de horários?</h1>
-            <p class="conteudo__informacoes__explicacao">Exemplo: Se QUASE todas as turmas começam as aulas nos mesmos horários,
-                têm a mesma duração de aula e intervalos iguais e algumas outras turmas têm horários diferentes (
-                    e essas outras turmas tem a mesma configuração de duração, intervalo e início de aulas) então 
-                    você terá 2 grupos diferentes. 
-                    Se por acaso, você tiver mais uma "divisão" de horários distintos, então terá 3 grupos.
-            </p>
-    </section>      
-        <section class="conteudo__botoes">
-            <div class="conteudo__quantidade">
-                <span class="minus">-</span>
-                <input type="number" id="digitarGrupos" min="2" max="4" value="2">
-                <span class="plus">+</span>
-            </div>
-            <button class="btn" id="botaoGrupo" onclick="criarGrupos()">Proximo</button>
+        <h1>Informações Iniciais</h1>
+        <section class="conteudo__primeiro-cadastro">
+            <form class="conteudo__formulario" method="get">
+                <label for="gruposTurmas">Quantos Grupos de Turmas?</label>
+                <select class="slct" type="number" id="gruposTurmas" name="gruposTurmas">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                </select>
+                    <label for="quantidadeAulas"> Quantas aulas as turmas têm nesse turno?</label>
+                    <select class="slct" type="number" size="1" id="quantidadeAulas" name="quantidadeAulas" onmousedown="if(this.options.length>5){this.size=5;}"  onchange='this.size=0;' onblur="this.size=0;">
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                        <option value="12">12</option>
+                        <option value="13">13</option>
+                        <option value="14">14</option>
+                        <option value="15">15</option>
+                        <option value="16">16</option>
+                        <option value="17">17</option>
+                        <option value="18">18</option>
+                        <option value="19">19</option>
+                        <option value="20">20</option>
+                    </select>
+
+                    <button onclick="primeiroCadastro(event)">Proximo</button>
+
+            </form>
         </section>
-            <section class="conteudo__interface">
+            <section class="conteudo__segundo-cadastro invisivel">
+                <form class="conteudo__formulario" method="get">
+                    <h2>Horário das turmas do Grupo 1</h2>
+                    <label for="horariosAulas">Que horas inicia a primeira aula?</label>
+                    <input type="time" id="horariosAulas" name="horariosAulas" min="06:00" max="23:59" required />
+                    <label for="duracaoAulas">Qual a duração dessa aula? Coloque em minutos</label>
+                    <input type="number" id="duracaoAulas" name="duracaoAulas" min="1" max="500" required />
+                </form>
             </section>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
