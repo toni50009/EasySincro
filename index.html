@@ -10,12 +10,14 @@
         <h1>Informações Iniciais</h1>
         <section class="conteudo__primeiro-cadastro">
             <form class="conteudo__formulario" method="get">
+
                 <label for="gruposTurmas">Quantos Grupos de Turmas?</label>
                 <select class="slct" type="number" id="gruposTurmas" name="gruposTurmas">
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
                 </select>
+
                     <label for="quantidadeAulas"> Quantas aulas as turmas têm nesse turno?</label>
                     <select class="slct" type="number" size="1" id="quantidadeAulas" name="quantidadeAulas" onmousedown="if(this.options.length>5){this.size=5;}"  onchange='this.size=0;' onblur="this.size=0;">
                         <option value="2">2</option>
@@ -39,18 +41,54 @@
                         <option value="20">20</option>
                     </select>
 
-                    <button onclick="primeiroCadastro(event)">Proximo</button>
+                    <button onclick="infoInicial(event)">Proximo</button>
 
         </section>
             <section class="conteudo__segundo-cadastro invisivel">
+
                     <h2>Horário das turmas do Grupo 1</h2>
+
                     <label for="horariosAulas">Que horas inicia a 1ª aula?</label>
                     <input type="time" id="horariosAulas" name="horariosAulas" min="06:00" max="23:59" required />
+
                     <label for="duracaoAulas">Qual a duração dessa aula? Coloque em minutos</label>
                     <input type="number" id="duracaoAulas" name="duracaoAulas" min="1" max="500" required />
-                    <label for="repeticoes">Matém desta mesma forma até qual aula?</label>
-                    <input type="number" id="repeticoes" name="repeticoes" min="1" max="20" required />
-                    <button onclick="horarioAula(event)">+</button>
+
+                    <label for="intervalos">Quantos intervalos as turmas têm nesse turno?</label>
+                    <select class="slct" type="number" size="1" id="intervalos" name="intervalos" onmousedown="if(this.options.length>5){this.size=5;}"  onchange='this.size=0;' onblur="this.size=0;">
+                        <option value="0">0</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                    </select>
+
+                    <button onclick="definirMomentosIntervalos(event)">Configurar Intervalos</button>
+
+                        <section class="momentosIntervalos invisivel">
+
+                            <label id="aposQualAula" for="momentosIntervalos">Após quais aulas as turmas têm intervalo?</label>
+                            <input type="number" id="aposQualAula" name="aposQualAula" min="1" max="19"/>
+
+                            <label for="duracaoIntervalo">Digite a duração do intervalo em minutos</label>
+                            <input type="number" id="duracaoIntervalo" name="duracaoIntervalo" min="1" max="30"/>
+
+                        </section>
+
+                        <section class="finalizaCadastro invisivel">
+
+                            <label for="repeticoes">Mantém desta mesma forma até qual aula?</label>
+                            <input type="number" id="repeticoes" name="repeticoes" min="1" max="20"/>
+
+                            <button onclick="gerarGrade(event)">+</button>
+
+                    </section>
             </section>
         </form>
     <script src="app.js"></script>

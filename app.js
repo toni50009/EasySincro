@@ -1,23 +1,34 @@
 const classeFormPrimeiro = document.querySelector(".conteudo__formulario");
 const classeFormSegundo = document.querySelector(".conteudo__segundo-cadastro");
+const classeMomentoIntervalo = document.querySelector(".momentosIntervalos");
 
-let numeroGrupos;
-let numeroAulas;
-let grupoAtual;
-let horariosAulas;
+let qtdGrupos;
+let qtdAulasTotais;
+let horarioAula;
 let duracaoAulas;
+let qtdintervaloAulas;
+let duracaoIntervaloAulas;
+let aposQualAula;
 let tempoMinutos;
 let finalDaAula;
 let repeticoes;
 let valorRepeticoesFinal;
-let listaGrupos = ["Grupo1" , "Grupo2", "Grupo3","Grupo4"];
-let posicaoAula = [];
+let totalMinutos;
+let contadorListaNumeroAulas;
+let posicaoAula = 1;
+let listaGrupos = ["Grupo1", "Grupo2", "Grupo3", "Grupo4"];
+let listaNumeroAulas = [];
+let grade = [];
 
 
-function primeiroCadastro(e){
+function infoInicial(e){
     e.preventDefault();
-    numeroGrupos = document.getElementById("gruposTurmas").value;
-    numeroAulas = document.getElementById("quantidadeAulas").value;
+    qtdGrupos = parseInt(document.getElementById("gruposTurmas").value);
+    qtdAulasTotais = parseInt(document.getElementById("quantidadeAulas").value);
+    for(let i = 1; i < (qtdAulasTotais + 1); i ++){
+        listaNumeroAulas.push(`${i}ª aula`);
+    }
+    alert(listaNumeroAulas);
     segundoCadastro();
 }
 
@@ -29,31 +40,53 @@ function segundoCadastro(){
 }
 
 
-function horarioAula(e){
+function gerarGrade(e){
     e.preventDefault();
     horarioAula = document.getElementById("horariosAulas").value;
-    duracaoAulas = document.getElementById("duracaoAulas").value;
-    repeticoes = document.getElementById("repeticoes").value;
-    converterHoras(horarioAula);
-    finalDaAula = parseInt(Number(horario) + Number(duracao));
+    duracaoAulas = parseInt(document.getElementById("duracaoAulas").value);
+    repeticoes = parseInt(document.getElementById("repeticoes").value);
+    totalMinutos = converterEmMinutos(horarioAula);
+    alert(totalMinutos);
+    finalDaAula = totalMinutos + duracaoAulas;
     alert(finalDaAula);
-    repetePadraoAulas(finalDaAula,duracaoAulas,repeticoes);
     alert(valorRepeticoesFinal);
+    calcularHorariosAulas(totalMinutos, duracaoAulas, duracaoIntervaloAulas, repeticoes);
+    alert(grade);
+    console.log(grade);
 }
 
 
-function converterHoras(horario,duracao){
+function calcularHorariosAulas(inicio, duracao, intervalo, qtdRepeticoes) {
+    for (let i = 0; i < qtdRepeticoes; i++) {
+        let inicioAula = inicio + (i * (duracao + intervalo));  // Calcula o início de cada aula (levando em consideração o intervalo)
+        let fimAula = inicioAula + duracao;  // Calcula o fim da aula
+
+        // Armazena os horários e a posição
+        grade.push({
+            aula: i + 1,
+            inicio: converterEmHoras(inicioAula),
+            fim: converterEmHoras(fimAula),
+        });
+    }
+}
+
+function converterEmMinutos(horario){
     tempoHoras = parseInt(horario.split(":")[0] * 60);
     tempoMinutos = parseInt(horario.split(":")[1]);
-    alert(tempoHoras);
-    alert(tempoMinutos);
+    return tempoHoras + tempoMinutos;
 }
 
-function repetePadraoAulas(final,duracao,qtdrepete){
-    valorRepeticoesFinal = Number(final + (qtdrepete * duracao));
-    return valorRepeticoesFinal;
+
+// Função auxiliar para converter minutos de volta para formato HH:MM
+function converterEmHoras(minutos) {
+    let horas = Math.floor(minutos / 60);
+    let mins = minutos % 60;
+    return `${String(horas).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
 }
 
-function criarHorarios(){
-    novaLinha = document.createElement("")
+
+function definirMomentosIntervalos(e){
+    e.preventDefault();
+    qtdintervaloAulas = parseInt(document.getElementById("intervalos").value);
+    duracaoIntervaloAulas = parseInt(document.getElementById("duracaoIntervalo").value);
 }
