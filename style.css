@@ -22,6 +22,11 @@
     width: 3rem;
 }
 
+.conteudo__segundo-cadastro{
+    display: flex;
+    flex-direction: column;
+}
+
 .invisivel{
     display: none;
 }
