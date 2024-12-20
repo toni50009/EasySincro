@@ -34,70 +34,85 @@ function criarQtdAulas(){
     const classePai = document.querySelector('.conteudo__segundo-cadastro');
 
         for(let i = 0; i < qtdTotalAulas ; i++){
+            let indiceAulaInicio = i + 1;
+
             const containerLinha = document.createElement("div");
             containerLinha.className = "form-group";  
             itensCriados.push(containerLinha);
             
             const horariosAulas = document.createElement("input");
             horariosAulas.type = "time";
-            horariosAulas.id = `horarioInicio${i+ 1}ªaula`;
-            horariosAulas.name = `horarioInicio${i+ 1}ªaula`;
+            horariosAulas.id = `horarioInicio${indiceAulaInicio}ªaula`;
+            horariosAulas.name = `horarioInicio${indiceAulaInicio}ªaula`;
 
             
             const labelInicio = document.createElement("label");
-            labelInicio.htmlFor = `horarioInicio${i+ 1}ªaula`;
+            labelInicio.htmlFor = `horarioInicio${indiceAulaInicio}ªaula`;
             if(i == 0){
-            labelInicio.textContent = `Que horas inicia a ${i+ 1}ª aula?`;
+            labelInicio.textContent = `Que horas inicia a ${indiceAulaInicio}ª aula?`;
             }else{
-                labelInicio.textContent = `Então, sua ${i+ 1}ª aula começa:`;
+                labelInicio.textContent = `Então, sua ${indiceAulaInicio}ª aula começa:`;
             }
 
 
 
             const labelDuracao = document.createElement("label");
-            labelDuracao.htmlFor = `duracao${i + 1}`;
+            labelDuracao.htmlFor = `duracao${indiceAulaInicio}`;
             labelDuracao.textContent = "Duração da aula (minutos):";
     
             const inputDuracao = document.createElement("input");
             inputDuracao.type = "number";
-            inputDuracao.id = `duracao${i + 1}`;
-            inputDuracao.name = `duracao${i + 1}`;
+            inputDuracao.id = `duracao${indiceAulaInicio}ªAula`;
+            inputDuracao.name = `duracao${indiceAulaInicio}ªAula`;
 
             
             const labelCheckbox = document.createElement("label");
-            labelCheckbox.htmlFor = `checkbox${i+ 1}`;
-            labelCheckbox.textContent = "Após essa aula, as turmas têm intervalo?";
+            labelCheckbox.htmlFor = `checkbox${indiceAulaInicio}`;
 
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
-            checkbox.id = `checkbox${i+ 1}`;
-            checkbox.name = `checkbox${i +1}`;
+            checkbox.id = `checkbox${indiceAulaInicio}`;
+            checkbox.name = `checkbox${indiceAulaInicio}`;
 
             if(i == 0){
                 const horariosAulas = document.createElement("input");
                 horariosAulas.type = "time";
-                horariosAulas.id = `horarioInicio${i+ 1}ªaula`;
-                horariosAulas.name = `horarioInicio${i+ 1}ªaula`;
+                horariosAulas.id = `horarioInicio${indiceAulaInicio}ªaula`;
+                horariosAulas.name = `horarioInicio${indiceAulaInicio}ªaula`;
             }
+
+            const preencherHorariosInicio = document.createElement("button");
+            preencherHorariosInicio.type = "button";
+            preencherHorariosInicio.id = `preencher-${indiceAulaInicio}ªaula`;
+            preencherHorariosInicio.name = `preencher-${indiceAulaInicio}ªaula`;
+            preencherHorariosInicio.textContent = "Checar Horários";
+            preencherHorariosInicio.addEventListener("click", () => {
+                atualizarHorariosDeInicio(indiceAulaInicio);
+            });
+
+            if(i > 0){
+                preencherHorariosInicio.style.display = 'none';
+            }
+
 
             checkbox.addEventListener("change", () => {
                 // Verificar se já existem elementos de intervalo associados
-                let labelIntervalo = containerLinha.querySelector(`#labelIntervalo${i + 1}`);
-                let duracaoIntervalo = containerLinha.querySelector(`#duracaoIntervalo${i + 1}`);
+                let labelIntervalo = containerLinha.querySelector(`#labelIntervalo${indiceAulaInicio}`);
+                let duracaoIntervalo = containerLinha.querySelector(`#duracaoIntervalo${indiceAulaInicio}`);
     
                 if (checkbox.checked) {
                     if (!labelIntervalo && !duracaoIntervalo) {
                         // Criar elementos para intervalo, se não existirem
                         labelIntervalo = document.createElement("label");
-                        labelIntervalo.id = `labelIntervalo${i + 1}`;
-                        labelIntervalo.htmlFor = `duracaoIntervalo${i + 1}`;
+                        labelIntervalo.id = `labelIntervalo${indiceAulaInicio}`;
+                        labelIntervalo.htmlFor = `duracaoIntervalo${indiceAulaInicio}`;
                         labelIntervalo.textContent = `Duração do intervalo (minutos):`;
                         containerLinha.appendChild(labelIntervalo);
     
                         duracaoIntervalo = document.createElement("input");
                         duracaoIntervalo.type = "number";
-                        duracaoIntervalo.id = `duracaoIntervalo${i + 1}`;
-                        duracaoIntervalo.name = `duracaoIntervalo${i + 1}`;
+                        duracaoIntervalo.id = `duracaoIntervalo${indiceAulaInicio}`;
+                        duracaoIntervalo.name = `duracaoIntervalo${indiceAulaInicio}`;
                         containerLinha.appendChild(duracaoIntervalo);
                     }
                 } else {
@@ -114,10 +129,59 @@ function criarQtdAulas(){
             containerLinha.appendChild(inputDuracao);
             containerLinha.appendChild(labelCheckbox);
             containerLinha.appendChild(checkbox);
+            containerLinha.appendChild(preencherHorariosInicio);
             classePai.appendChild(containerLinha);
 
         }
         console.log(itensCriados);
 
+}
+
+
+
+function atualizarHorariosDeInicio(checkAula){
+    let campoConfereAula = document.getElementById(`horarioInicio${checkAula}ªaula`).value;
+    let campoConfereDuracaoAula = parseInt(document.getElementById(`duracao${checkAula}ªAula`).value);
+
+    if(campoConfereAula == "" || campoConfereDuracaoAula == ""){
+        alert("Digite todos os campos desta linha!");
+        return;
+    }
+
+    let confereAulaEmMinutos = converterEmMinutos(campoConfereAula);
+    let somaAulaDuracao = confereAulaEmMinutos + campoConfereDuracaoAula;
+    let somaAulaDuracaoHoras = converterEmHoras(somaAulaDuracao);
+    alert(confereAulaEmMinutos);
+    alert(somaAulaDuracao);
+    preencherProximosHorarios(checkAula,somaAulaDuracao);
+    alert(campoConfereAula);
+}
+
+
+
+function converterEmMinutos(horario){
+    let tempoHoras = parseInt(horario.split(":")[0] * 60);
+    let tempoMinutos = parseInt(horario.split(":")[1]);
+    return tempoHoras + tempoMinutos;
+}
+
+
+function converterEmHoras(minutos) {
+    let horas = Math.floor(minutos / 60);
+    let restanteMinutos = minutos % 60;
+    return `${horas}:${restanteMinutos < 10 ? '0' + restanteMinutos : restanteMinutos}`;
+}
+
+
+function preencherProximosHorarios(checkAula, horario) {
+    let proximaAula = checkAula + 1;
+    let proximoCampo = document.getElementById(`horarioInicio${proximaAula}ªaula`);
+    let horarioFormatado = horario.padStart(5, '0');
+
+    while (proximoCampo) {
+        proximoCampo.value = horarioFormatado;
+        proximaAula++;
+        proximoCampo = document.getElementById(`horarioInicio${proximaAula}ªaula`);
+    }
 }
 

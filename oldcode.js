@@ -81,3 +81,6 @@ function definirMomentosIntervalos(e){
     qtdintervaloAulas = parseInt(document.getElementById("intervalos").value);
     duracaoIntervaloAulas = parseInt(document.getElementById("duracaoIntervalo").value);
 }
+
+
+}
