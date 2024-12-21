@@ -2,10 +2,11 @@ const classeFormPrimeiro = document.querySelector(".conteudo__primeiro-cadastro"
 const classeFormSegundo = document.querySelector(".conteudo__segundo-cadastro");
 
 
-
+let duracaoPadraoAula = null;
 let grade = [];
 let grupos = [];
 let itensCriados = [];
+
 
 
 
@@ -22,7 +23,7 @@ function infoInicial(e){
 }
 
 // Incluir aula
-function criarQtdAulas(){
+function definirQtdAulas(){
 
     const qtdTotalAulas = document.getElementById("quantidadeAulas").value;
 
@@ -139,49 +140,68 @@ function criarQtdAulas(){
 
 
 
-function atualizarHorariosDeInicio(checkAula){
-    let campoConfereAula = document.getElementById(`horarioInicio${checkAula}ªaula`).value;
-    let campoConfereDuracaoAula = parseInt(document.getElementById(`duracao${checkAula}ªAula`).value);
+function atualizarHorariosDeInicio(checkAula) {
+    const campoHoraAtual = document.getElementById(`horarioInicio${checkAula}ªaula`).value;
+    const campoDuracaoAula = parseInt(document.getElementById(`duracao${checkAula}ªAula`).value);
+    const checkbox = document.getElementById(`checkbox${checkAula}`);
+    const campoIntervalo = checkbox.checked ? parseInt(document.getElementById(`duracaoIntervalo${checkAula}`).value) : 0;
 
-    if(campoConfereAula == "" || campoConfereDuracaoAula == ""){
-        alert("Digite todos os campos desta linha!");
+    if (!campoHoraAtual || isNaN(campoDuracaoAula) || (checkbox.checked && isNaN(campoIntervalo))) {
+        alert("Preencha todos os campos obrigatórios nesta linha!");
         return;
     }
 
-    let confereAulaEmMinutos = converterEmMinutos(campoConfereAula);
-    let somaAulaDuracao = confereAulaEmMinutos + campoConfereDuracaoAula;
-    let somaAulaDuracaoHoras = converterEmHoras(somaAulaDuracao);
-    alert(confereAulaEmMinutos);
-    alert(somaAulaDuracao);
-    preencherProximosHorarios(checkAula,somaAulaDuracao);
-    alert(campoConfereAula);
+    // Definir a duração padrão na primeira aula
+    if (!duracaoPadraoAula) duracaoPadraoAula = campoDuracaoAula;
+
+    const horarioAtualEmMinutos = converterEmMinutos(campoHoraAtual);
+    const somaDuracao = horarioAtualEmMinutos + campoDuracaoAula + campoIntervalo;
+
+    preencherProximosHorarios(checkAula, somaDuracao);
 }
 
 
 
 function converterEmMinutos(horario){
-    let tempoHoras = parseInt(horario.split(":")[0] * 60);
-    let tempoMinutos = parseInt(horario.split(":")[1]);
-    return tempoHoras + tempoMinutos;
+    const [horas, minutos] = horario.split(":").map(Number);
+    return horas * 60 + minutos;
 }
 
 
 function converterEmHoras(minutos) {
     let horas = Math.floor(minutos / 60);
     let restanteMinutos = minutos % 60;
-    return `${horas}:${restanteMinutos < 10 ? '0' + restanteMinutos : restanteMinutos}`;
+    return `${horas.toString().padStart(2, '0')}:${restanteMinutos.toString().padStart(2, '0')}`;;
 }
 
 
-function preencherProximosHorarios(checkAula, horario) {
+function preencherProximosHorarios(checkAula, horarioAtualEmMinutos) {
     let proximaAula = checkAula + 1;
-    let proximoCampo = document.getElementById(`horarioInicio${proximaAula}ªaula`);
-    let horarioFormatado = horario.padStart(5, '0');
 
-    while (proximoCampo) {
-        proximoCampo.value = horarioFormatado;
+    while (document.getElementById(`horarioInicio${proximaAula}ªaula`)) {
+        const proximoCampoHorario = document.getElementById(`horarioInicio${proximaAula}ªaula`);
+        const proximoCampoDuracao = document.getElementById(`duracao${proximaAula}ªAula`);
+
+        // Atualizar horário de início
+        proximoCampoHorario.value = converterEmHoras(horarioAtualEmMinutos);
+
+        // Manter a duração padrão
+        proximoCampoDuracao.value = duracaoPadraoAula;
+
+        // Incrementar para a próxima aula
+        horarioAtualEmMinutos += duracaoPadraoAula;
+
+        // Considerar intervalo se existir
+        const checkbox = document.getElementById(`checkbox${proximaAula}`);
+        if (checkbox && checkbox.checked) {
+            const campoIntervalo = document.getElementById(`duracaoIntervalo${proximaAula}`);
+            if (campoIntervalo && !isNaN(parseInt(campoIntervalo.value))) {
+                horarioAtualEmMinutos += parseInt(campoIntervalo.value);
+            }
+        }
+
         proximaAula++;
-        proximoCampo = document.getElementById(`horarioInicio${proximaAula}ªaula`);
     }
 }
+
 
