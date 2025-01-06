@@ -1,31 +1,43 @@
 
 //variaveis globais e arrays
-let duracaoPadraoAula = null;
 let grade = [];
 let itensCriados = [];
 let grupos = {};
 
 
 
-// Listener do número de grupos, cria as divisões e os primeiros inputs
+// Listener do número de grupos, cria as divisões
 document.getElementById("num-grupos").addEventListener("input", function(){
     const horariosInputs = document.querySelector(".horarios-inputs");
-    const body = document.querySelector("body");
     const botaoComparar = document.getElementById("botaoComparar");
     const numGrupos = parseInt(this.value);
     horariosInputs.innerHTML = "";
     grupos = {};
 
-    if(numGrupos > 1 && numGrupos <= 4){
-        for(let i = 1; i <= numGrupos; i++){
 
+    //chama a função de criar as Divs e inputs
+        if(numGrupos > 1 && numGrupos <= 4){
+            for(let i = 1; i <= numGrupos; i++){
+                criarDivGrupo(i, horariosInputs);
+            }
+            botaoComparar.classList.remove("invisivel");
+        }else{
+        botaoComparar.classList.add("invisivel");
+        }
+
+});
+
+
+//Criar a Div de cada grupo e seus primeiros inputs
+function criarDivGrupo(i, classePai){
+    
             // cria a div de cada grupo
             const divGrupo = document.createElement("div");
-            divGrupo.className = `form-group${i}`;
+            divGrupo.className = `form-grupo${i}`;
             divGrupo.classList.add("form-group");
             divGrupo.id = `form-grupo${i}`;
             divGrupo.innerHTML = `<h2>Grupo ${i}</h2>`;
-            horariosInputs.appendChild(divGrupo);
+            classePai.appendChild(divGrupo);
 
             // Inclui primeiros inputs
             const label = document.createElement("label");
@@ -36,7 +48,7 @@ document.getElementById("num-grupos").addEventListener("input", function(){
             select.setAttribute("id", `quantidadeAulas-grupo${i}`);
             select.setAttribute("name", `quantidadeAulas-grupo${i}`);
             select.classList.add("slct");
-            select.onchange = function() { definirQtdAulas(`quantidadeAulas-grupo${i}`, `.form-group${i}`)};
+            select.onchange = function() { definirQtdAulas(`quantidadeAulas-grupo${i}`, `.form-grupo${i}`)};
 
             // Adiciona as options dinamicamente
                 
@@ -57,20 +69,87 @@ document.getElementById("num-grupos").addEventListener("input", function(){
             // Adiciona os elementos ao container do grupo 
             divGrupo.appendChild(label);
             divGrupo.appendChild(select);
-        }
-        botaoComparar.classList.remove("invisivel");
 
-    }else{
-    botaoComparar.classList.add("invisivel");
+            // Adicionar os listeners para o grupo criado
+            adicionarListenersParaAtualizacao(i, 1);
+}
+
+
+
+// Função que atualiza os dados do grupo no array 'grupos'
+function atualizarDadosGrupo(grupoId) {
+    const qtdAulas = parseInt(document.getElementById(`quantidadeAulas-grupo${grupoId}`).value);
+
+    if (!grupos[grupoId]) grupos[grupoId] = [];
+
+    grupos[grupoId] = []; // Limpa o array antes de atualizar
+
+    for (let i = 1; i <= qtdAulas; i++) {
+        const horarioInicio = document.getElementById(`horarioInicio${i}ªaula`).value;
+        const duracaoAula = parseInt(document.getElementById(`duracao${i}ªAula`).value) || 0;
+        const intervaloCheckbox = document.getElementById(`checkbox${i}`);
+        const intervaloDuracao = intervaloCheckbox.checked
+            ? parseInt(document.getElementById(`duracaoIntervalo${i}`).value) || 0
+            : 0;
+
+        grupos[grupoId].push({
+            horarioInicio,
+            duracaoAula,
+            intervaloDuracao,
+        });
     }
 
-});
+    console.log(`Grupo ${grupoId} atualizado:`, grupos[grupoId]);
+}
+
+
+
+// Adicionar listeners para atualizar os dados do grupo ao alterar os campos
+function adicionarListenersParaAtualizacao(grupoId, qtdAulas) {
+    for (let i = 1; i <= qtdAulas; i++) {
+        const horarioInput = document.getElementById(`horarioInicio${i}ªaula`);
+        const duracaoInput = document.getElementById(`duracao${i}ªAula`);
+        const intervaloCheckbox = document.getElementById(`checkbox${i}`);
+        const intervaloDuracaoInput = document.getElementById(`duracaoIntervalo${i}`);
+
+        // Listener para horário de início
+        if (horarioInput) {
+            horarioInput.addEventListener("change", () => atualizarDadosGrupo(grupoId));
+        }
+
+        // Listener para duração da aula
+        if (duracaoInput) {
+            duracaoInput.addEventListener("change", () => atualizarDadosGrupo(grupoId));
+        }
+
+        // Listener para o checkbox de intervalo
+        if (intervaloCheckbox) {
+            intervaloCheckbox.addEventListener("change", () => {
+                atualizarDadosGrupo(grupoId);
+
+                // Adiciona listener ao campo de duração do intervalo, se existir
+                if (intervaloDuracaoInput) {
+                    intervaloDuracaoInput.addEventListener("change", () => atualizarDadosGrupo(grupoId));
+                }
+            });
+        }
+
+        // Listener para duração do intervalo, se existir
+        if (intervaloDuracaoInput) {
+            intervaloDuracaoInput.addEventListener("change", () => atualizarDadosGrupo(grupoId));
+        }
+    }
+}
+
+
 
 
 // quantos campos serão criados baseados na quantidade de aulas
 function definirQtdAulas(id, classePai){
     const qtdTotalAulas = document.getElementById(id).value;
+    const grupoId = id.split("-")[1].replace("grupo", ""); // Extrai o grupoId do ID
 
+    //Para não criar campos de inputs duplicados
     if(itensCriados.length > 0){
         itensCriados.forEach(item => item.remove());
         itensCriados = [];
@@ -79,6 +158,7 @@ function definirQtdAulas(id, classePai){
 
     const classeForm = document.querySelector(classePai);
 
+        //loop para criar cada campoInput de aula , div denominada campoInputs
         for(let i = 1; i <= qtdTotalAulas ; i++){
 
             const campoInputs = document.createElement("div");
@@ -95,11 +175,7 @@ function definirQtdAulas(id, classePai){
             
             const labelInicio = document.createElement("label");
             labelInicio.htmlFor = `horarioInicio${i}ªaula`;
-            if(i == 1){
-            labelInicio.textContent += `Que horas inicia a ${i}ª aula?`;
-            }else{
-                labelInicio.textContent = `Sua ${i}ª aula começa:`;
-            }
+            labelInicio.textContent = `Sua ${i}ª aula começa:`;
             itensCriados.push(labelInicio);
 
 
@@ -147,7 +223,7 @@ function definirQtdAulas(id, classePai){
                         labelIntervalo = document.createElement("label");
                         labelIntervalo.id = `labelIntervalo${i}`;
                         labelIntervalo.htmlFor = `duracaoIntervalo${i}`;
-                        labelIntervalo.textContent = `Duração do intervalo (minutos):`;
+                        labelIntervalo.textContent = "Duração do intervalo (minutos):";
                         campoInputs.appendChild(labelIntervalo);
                         itensCriados.push(labelIntervalo);
     
@@ -167,6 +243,8 @@ function definirQtdAulas(id, classePai){
             });
 
 
+
+            //Incluir na DOM
             campoInputs.appendChild(labelInicio);
             campoInputs.appendChild(horariosAulas);
             campoInputs.appendChild(labelDuracao);
@@ -176,8 +254,16 @@ function definirQtdAulas(id, classePai){
 
 
         }
+
+        // para referência
         console.log(itensCriados);
 
+        adicionarListenersParaAtualizacao(grupoId, qtdTotalAulas);
+
+     // Inicializar o array do grupo se ainda não existir
+    if (!grupos[grupoId]) {
+        grupos[grupoId] = [];
+    }
 
 
 }
@@ -185,6 +271,8 @@ function definirQtdAulas(id, classePai){
 
 
 function atualizarHorariosDeInicio(checkAula) {
+    let duracaoPadraoAula;
+
     const campoHoraAtual = document.getElementById(`horarioInicio${checkAula}ªaula`).value;
     const campoDuracaoAula = parseInt(document.getElementById(`duracao${checkAula}ªAula`).value);
     const checkbox = document.getElementById(`checkbox${checkAula}`);
@@ -193,31 +281,17 @@ function atualizarHorariosDeInicio(checkAula) {
 
 
 
-    // Definir a duração padrão na primeira aula
-    if (!duracaoPadraoAula) duracaoPadraoAula = campoDuracaoAula;
+    // Definir a duração padrão das aulas, assim atualiza as próximas com a padrão de duração da aula informado
+    duracaoPadraoAula = campoDuracaoAula;
 
     const horarioAtualEmMinutos = converterEmMinutos(campoHoraAtual);
     const somaDuracao = horarioAtualEmMinutos + campoDuracaoAula + campoIntervalo;
 
-    preencherProximosHorarios(checkAula, somaDuracao);
+    preencherProximosHorarios(checkAula, somaDuracao, duracaoPadraoAula);
 }
 
 
-
-function converterEmMinutos(horario){
-    const [horas, minutos] = horario.split(":").map(Number);
-    return horas * 60 + minutos;
-}
-
-
-function converterEmHoras(minutos) {
-    let horas = Math.floor(minutos / 60);
-    let restanteMinutos = minutos % 60;
-    return `${horas.toString().padStart(2, '0')}:${restanteMinutos.toString().padStart(2, '0')}`;;
-}
-
-
-function preencherProximosHorarios(checkAula, horarioAtualEmMinutos) {
+function preencherProximosHorarios(checkAula, horarioAtualEmMinutos, duracaoPadrao) {
     let proximaAula = checkAula + 1;
 
 
@@ -230,10 +304,10 @@ function preencherProximosHorarios(checkAula, horarioAtualEmMinutos) {
         
 
         // Manter a duração padrão
-        proximoCampoDuracao.value = duracaoPadraoAula;
+        proximoCampoDuracao.value = duracaoPadrao;
 
         // Incrementar para a próxima aula
-        horarioAtualEmMinutos += duracaoPadraoAula;
+        horarioAtualEmMinutos += duracaoPadrao;
 
         // Considerar intervalo se existir
         const checkbox = document.getElementById(`checkbox${proximaAula}`);
@@ -249,37 +323,41 @@ function preencherProximosHorarios(checkAula, horarioAtualEmMinutos) {
 }
 
 
-
-
-// funções para criar os campos input 
-function criarLabel(forAttribute, texto, classePai) {
-    const label = document.createElement("label");
-    label.htmlFor = forAttribute;
-    label.textContent = texto;
-    classePai.appendChild(label);
-    return label;
-}
-
-function criarInput(type, id, classePai) {
-    const input = document.createElement("input");
-    input.type = type;
-    input.id = id;
-    input.name = id;
-    classePai.appendChild(input);
-    return input;
+//funções para conversão de valores
+function converterEmMinutos(horario){
+    const [horas, minutos] = horario.split(":").map(Number);
+    return horas * 60 + minutos;
 }
 
 
-function compararHorarios(){
-    let verificadorSelect;
-    for(let i = 0;i < document.getElementById("num-grupos").value; i ++ ){
-        verificadorSelect = document.getElementById(`quantidadeAulas-grupo${i}`);
-        alert(`Verificador quantidadeAulas-grupo${i}`);
-        if(verificadorSelect.value = "Selecionar"){
-            alert("Não está certo");
-        }else{
-            alert("Está certo");
+function converterEmHoras(minutos) {
+    let horas = Math.floor(minutos / 60);
+    let restanteMinutos = minutos % 60;
+    return `${horas.toString().padStart(2, '0')}:${restanteMinutos.toString().padStart(2, '0')}`;
+}
+
+
+// Alteração - Função compararHorarios para validar e exibir o array 'grupos'
+function compararHorarios() {
+    const erros = [];
+    const gruposIds = Object.keys(grupos);
+
+    gruposIds.forEach((grupoId) => {
+        const aulas = grupos[grupoId];
+        if (!aulas || aulas.length === 0) {
+            erros.push(`Grupo ${grupoId} está incompleto ou vazio.`);
+        } else {
+            aulas.forEach((aula, index) => {
+                if (!aula.inicio || aula.duracao === null) {
+                    erros.push(`Grupo ${grupoId}, Aula ${index + 1} está incompleta.`);
+                }
+            });
         }
-    }
+    });
 
+    if (erros.length > 0) {
+        console.error("Erros encontrados:", erros);
+    } else {
+        console.log("Grupos:", grupos);
+    }
 }
