@@ -18,10 +18,9 @@ document.getElementById("num-grupos").addEventListener("input", function () {
         for (let i = 1; i <= numGrupos; i++) {
             criarDivGrupo(i, horariosInputs);
         }
-        botaoComparar.classList.remove("invisivel");
-    } else {
-        botaoComparar.classList.add("invisivel");
     }
+
+    botaoComparar.classList.add("invisivel");
 });
 
 // Atualiza o objeto `grupos` com o número de grupos especificado
@@ -47,19 +46,28 @@ function criarDivGrupo(grupoId, container) {
             ${Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("")}
         </select>
     `;
+
     container.appendChild(divGrupo);
 }
 
 // Define a quantidade de aulas e cria os campos de inputs correspondentes
 function definirQtdAulas(grupoId) {
+
     const qtdAulas = parseInt(document.getElementById(`quantidadeAulas-grupo${grupoId}`).value);
     const divGrupo = document.querySelector(`.form-grupo${grupoId}`);
     divGrupo.querySelectorAll(".campoInput").forEach((campo) => campo.remove());
+
+    if(qtdAulas != "0"){
+        botaoComparar.classList.remove("invisivel");
+    }else{
+        botaoComparar.classList.add("invisivel");
+    }
 
     for (let i = 1; i <= qtdAulas; i++) {
         criarCampoAula(grupoId, i, divGrupo);
     }
     grupos[grupoId] = Array(qtdAulas).fill({ horarioInicio: null, duracao: 0, intervalo: 0 });
+    console.log(grupos);
 }
 
 // Cria os campos de inputs para uma aula específica
@@ -178,4 +186,34 @@ function converterEmHoras(minutos) {
 }
 
 
+
+// Função para verificar se os cadastros estão preenchidos
+function verificarCadastros() {
+    for (const grupoId in grupos) {
+        const aulas = grupos[grupoId];
+
+        // Verifica se o grupo está vazio
+        if (aulas.length === 0) {
+            alert(`O grupo ${grupoId} está vazio.`);
+            return;
+        }
+
+        // Verifica se alguma aula está com cadastro incompleto
+        for (const aula of aulas) {
+            if (!aula.horarioInicio) {
+                alert(`Algum cadastro está faltando no grupo ${grupoId}.`);
+                return;
+            }
+        }
+    }
+    compararHorarios();
+}
+
+
+
+// Função para comparar os horários e mostrar o resultado na tela
+function compararHorarios(){
+    alert("Está tudo certo!");
+    alert("A função CompararHorarios foi chamada");
+}
 
