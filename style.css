@@ -1,6 +1,13 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+
 body{
     font-family: Arial, sans-serif;
     margin: 1.25rem;
+    background-color: #dff0d8;
+    color: #189443;
 }
 
 
@@ -9,8 +16,22 @@ h1{
 }
 
 #conteudo-form{
-    width: 25%;
+    width: 100%;
 }
+
+.horarios-inputs{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.form-grupo1 , .form-grupo2 , .form-grupo3 , .form-grupo4{
+    width: 100%;
+    border: 0.5rem solid rgb(1, 133, 89);
+    padding: 0.5rem;
+}
+
+
 
 .slct{
     width: 100%;
@@ -34,6 +55,12 @@ input[type="number"], input[type="time"]{
     box-sizing: border-box;
 } 
 
+.containerBotao{
+    display: flex;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
 button {
     padding: 10px 20px;
     background-color: #4CAF50;
@@ -42,9 +69,12 @@ button {
     cursor: pointer;
 }
 
+
 button:hover {
     background-color: #45a049;
 }
+
+
 
 .resultados {
     margin-top: 30px;

@@ -79,28 +79,28 @@ function criarCampoAula(grupoId, aulaId, container, checadorQuantidade , i) {
     <label for="horarioInicio${grupoId}_${aulaId}">Horário de início ${aulaId}ªAula:</label>
     <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-    <label for="duracao${grupoId}_${aulaId}">Duração da aula (minutos):</label>
+    <label for="duracao${grupoId}_${aulaId}">Duração da aula em minutos:</label>
     <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
             <label for="checkbox${grupoId}_${aulaId}"  style="display: none;" >Intervalo após a aula:</label>
             <input type="checkbox" id="checkbox${grupoId}_${aulaId}" style="display: none;" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração do intervalo (minutos):</label>
+            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração do intervalo em minutos:</label>
             <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
         `;
 
     }else{
         campoInputs.innerHTML = `
-            <label for="horarioInicio${grupoId}_${aulaId}">Horário de início ${aulaId}ªAula:</label>
+            <label for="horarioInicio${grupoId}_${aulaId}" >Horário de início ${aulaId}ªAula:</label>
             <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="duracao${grupoId}_${aulaId}">Duração da aula (minutos):</label>
+            <label for="duracao${grupoId}_${aulaId}">Duração da aula em minutos:</label>
             <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="checkbox${grupoId}_${aulaId}">Intervalo após a aula:</label>
+            <label for="checkbox${grupoId}_${aulaId}" >Intervalo após a aula:</label>
             <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração do intervalo (minutos):</label>
+            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração do intervalo em minutos :</label>
             <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
         `;
         }
@@ -262,7 +262,10 @@ function verificarCadastros() {
                         if (inicioAulaGrupo2 < inicioProximaAulaGrupo1) {
                             resultadosDiv.innerHTML += `
                                 <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, NÃO pode ter a próxima aula com turma do Grupo ${gruposIds[j]}.</p>`;
-                        } else {
+                        } else if((inicioAulaGrupo2 - inicioProximaAulaGrupo1) > 20 ) {
+                            resultadosDiv.innerHTML += `
+                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, É RUIM ter a próxima aula com turma do Grupo ${gruposIds[j]}.</p>`;
+                        }  else{
                             resultadosDiv.innerHTML += `
                                 <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, PODE ter a próxima aula com turma do Grupo ${gruposIds[j]}.</p>`;
                         }
