@@ -248,7 +248,6 @@ function verificarCadastros() {
 // Função para comparar os horários e mostrar o resultado na tela
     function compararHorarios() {
         const resultadosDiv = document.getElementById("resultados");
-        const conteudoSemResultado = document.getElementById("container-conteudo");
         const campoResultado = document.getElementById("campo-resultados");
         resultadosDiv.innerHTML = ""; // Limpa os resultados anteriores
         resultadosDiv.classList.remove("invisivel");
@@ -290,10 +289,9 @@ function verificarCadastros() {
                 }
             }
         }
-         // mostrar somente resultado na tela
-         conteudoSemResultado.classList.add("invisivel");
+         // mostrar resultado na tela
          campoResultado.style = "display: flex";
-         window.scrollTo({ top: 0, behavior: 'smooth' });
+         campoResultado.scrollIntoView();
     }
     
 
