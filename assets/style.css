@@ -28,7 +28,7 @@ body {
 
 .container {
     width: 90%;
-    padding: 2rem;
+    padding: 0.2rem;
     border: 2px solid var(--cor-primaria);
     border-radius: 10px;
     background-color: var(--cor-fundo-container);

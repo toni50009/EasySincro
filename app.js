@@ -75,50 +75,17 @@ function definirQtdAulas(grupoId) {
     divGrupo.querySelectorAll(".campoInput").forEach((campo) => campo.remove());
 
     for (let i = 1; i <= qtdAulas; i++) {
-        criarCampoAula(grupoId, i, divGrupo, qtdAulas, i);
+        criarCampoAula(grupoId, i, divGrupo, qtdAulas);
     }
     grupos[grupoId] = Array(qtdAulas).fill({ horarioInicio: null, duracao: 0, intervalo: 0 });
     console.log(grupos);
 }
 
 // Cria os campos de inputs para uma aula específica
-function criarCampoAula(grupoId, aulaId, container, checadorQuantidade , i) {
+function criarCampoAula(grupoId, aulaId, container, checadorQuantidade) {
     const campoInputs = document.createElement("div");
     campoInputs.className = "campoInput";
-    if(checadorQuantidade == i){
-    campoInputs.innerHTML = `
-    <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
-    <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-    <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-    <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-        <div class="checkbox-container">
-            <label for="checkbox${grupoId}_${aulaId}"  style="display: none;" >Intervalo?</label>
-            <input type="checkbox" id="checkbox${grupoId}_${aulaId}" style="display: none;" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração:</label>
-            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-        </div>
-            `;
-
-    }else{
-        campoInputs.innerHTML = `
-            <label for="horarioInicio${grupoId}_${aulaId}" >Horário de início <strong>${aulaId}</strong>ªAula:</label>
-            <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-            <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-            <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-            <div class="checkbox-container">
-                <label for="checkbox${grupoId}_${aulaId}" >Intervalo?</label>
-                <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-                <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" >Duração:</label>
-                <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;"  class="input-pequeno" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-            </div>
-            `;
-        }
+    restringirCampoInput(campoInputs, checadorQuantidade, grupoId, aulaId);
 
     const checkbox = campoInputs.querySelector(`#checkbox${grupoId}_${aulaId}`);
     const labelIntervalo = campoInputs.querySelector(`label[for="duracaoIntervalo${grupoId}_${aulaId}"]`);
@@ -292,6 +259,7 @@ function verificarCadastros() {
          // mostrar somente resultado na tela
          campoResultado.style = "display: flex";
          campoResultado.scrollIntoView({ behavior: "smooth"});
+
     }
     
 
@@ -300,3 +268,43 @@ function verificarCadastros() {
 function resetar(){
    location.reload();
 }
+
+
+function restringirCampoInput(campoInputs, grupoId, aulaId, i){
+    if(aulaId == 1){
+    campoInputs.innerHTML = `
+    <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
+    <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+
+    <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+    <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+
+        <div class="checkbox-container">
+            <label for="checkbox${grupoId}_${aulaId}">Intervalo?</label>
+            <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+
+            <label for="duracaoIntervalo${grupoId}_${aulaId}">Duração:</label>
+            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+        </div>
+            `;
+    }else if(aulaId > 1){
+        campoInputs.innerHTML = `
+        <label for="horarioInicio${grupoId}_${aulaId}" style="disabled" >Horário de início <strong>${aulaId}</strong>ªAula:</label>
+        <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+    
+        <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+        <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+    
+            <div class="checkbox-container">
+                <label for="checkbox${grupoId}_${aulaId}">Intervalo?</label>
+                <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+    
+                <label for="duracaoIntervalo${grupoId}_${aulaId}">Duração:</label>
+                <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+            </div>
+                `;
+    
+            }
+
+}
+
