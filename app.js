@@ -289,9 +289,9 @@ function verificarCadastros() {
                 }
             }
         }
-         // mostrar resultado na tela
+         // mostrar somente resultado na tela
          campoResultado.style = "display: flex";
-         campoResultado.scrollIntoView();
+         campoResultado.scrollIntoView({ behavior: "smooth"});
     }
     
 
