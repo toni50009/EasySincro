@@ -1,6 +1,18 @@
 // Variáveis globais para armazenamento dos grupos e aulas
 let grupos = {};
 
+
+//mostrar/esconder tutorial
+function mostrarTutorial(){
+       const campoTutorial = document.getElementById("campo-tutorial");
+       if(campoTutorial.classList.contains("invisivel")){
+        campoTutorial.classList.remove("invisivel");
+        }else{
+         campoTutorial.classList.add("invisivel");
+       }
+}
+
+
 // Listener para o número de grupos
 document.getElementById("num-grupos").addEventListener("input", function () {
     const numGrupos = parseInt(this.value);
@@ -37,14 +49,16 @@ function criarDivGrupo(grupoId, container) {
     const divGrupo = document.createElement("div");
     divGrupo.className = `form-grupo${grupoId}`;
     divGrupo.innerHTML = `
-        <h2>Grupo ${grupoId}</h2>
-        <label for="quantidadeAulas-grupo${grupoId}">
-            Selecione a quantidade de aulas neste turno:
-        </label>
-        <select id="quantidadeAulas-grupo${grupoId}" onchange="definirQtdAulas(${grupoId})">
-            <option value="0">Selecionar</option>
-            ${Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("")}
-        </select>
+        <div class="container-grupos">
+            <h2>Grupo ${grupoId}</h2>
+            <label for="quantidadeAulas-grupo${grupoId}">
+                Quantidade de Aulas:
+            </label>
+            <select id="quantidadeAulas-grupo${grupoId}" onchange="definirQtdAulas(${grupoId})">
+                <option value="0">Selecionar</option>
+                ${Array.from({ length: 20 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("")}
+            </select>
+        </div>
     `;
 
     container.appendChild(divGrupo);
@@ -76,33 +90,37 @@ function criarCampoAula(grupoId, aulaId, container, checadorQuantidade , i) {
     campoInputs.className = "campoInput";
     if(checadorQuantidade == i){
     campoInputs.innerHTML = `
-    <label for="horarioInicio${grupoId}_${aulaId}">Horário de início ${aulaId}ªAula:</label>
+    <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
     <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-    <label for="duracao${grupoId}_${aulaId}">Duração da aula em minutos:</label>
+    <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
     <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="checkbox${grupoId}_${aulaId}"  style="display: none;" >Intervalo após a aula:</label>
+        <div class="checkbox-container">
+            <label for="checkbox${grupoId}_${aulaId}"  style="display: none;" >Intervalo?</label>
             <input type="checkbox" id="checkbox${grupoId}_${aulaId}" style="display: none;" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração do intervalo em minutos:</label>
-            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-        `;
+            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração:</label>
+            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+        </div>
+            `;
 
     }else{
         campoInputs.innerHTML = `
-            <label for="horarioInicio${grupoId}_${aulaId}" >Horário de início ${aulaId}ªAula:</label>
+            <label for="horarioInicio${grupoId}_${aulaId}" >Horário de início <strong>${aulaId}</strong>ªAula:</label>
             <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="duracao${grupoId}_${aulaId}">Duração da aula em minutos:</label>
+            <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
             <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="checkbox${grupoId}_${aulaId}" >Intervalo após a aula:</label>
-            <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+            <div class="checkbox-container">
+                <label for="checkbox${grupoId}_${aulaId}" >Intervalo?</label>
+                <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração do intervalo em minutos :</label>
-            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-        `;
+                <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" >Duração:</label>
+                <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;"  class="input-pequeno" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+            </div>
+            `;
         }
 
     const checkbox = campoInputs.querySelector(`#checkbox${grupoId}_${aulaId}`);
@@ -251,8 +269,7 @@ function verificarCadastros() {
                     // Calcula o horário de início da próxima aula no grupo 1
                     const inicioProximaAulaGrupo1 =
                         converterEmMinutos(aulaGrupo1.horarioInicio) +
-                        aulaGrupo1.duracao +
-                        aulaGrupo1.intervalo;
+                        aulaGrupo1.duracao;
     
                     if (k + 1 < grupo2.length) {
                         const aulaGrupo2 = grupo2[k + 1];
@@ -261,13 +278,13 @@ function verificarCadastros() {
                         // Faz a comparação e adiciona os resultados
                         if (inicioAulaGrupo2 < inicioProximaAulaGrupo1) {
                             resultadosDiv.innerHTML += `
-                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, NÃO pode ter a próxima aula com turma do Grupo ${gruposIds[j]}.</p>`;
+                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, pode ter a próxima aula com turma do Grupo ${gruposIds[j]}? <span class="vermelho">NÃO</span></p>`;
                         } else if((inicioAulaGrupo2 - inicioProximaAulaGrupo1) > 20 ) {
                             resultadosDiv.innerHTML += `
-                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, É RUIM ter a próxima aula com turma do Grupo ${gruposIds[j]}.</p>`;
+                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, pode  ter a próxima aula com turma do Grupo ${gruposIds[j]}? <span class="vermelho">É RUIM</span></p>`;
                         }  else{
                             resultadosDiv.innerHTML += `
-                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, PODE ter a próxima aula com turma do Grupo ${gruposIds[j]}.</p>`;
+                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, pode  ter a próxima aula com turma do Grupo ${gruposIds[j]}? <span class="verde">SIM</span></p>`;
                         }
                     }
                 }

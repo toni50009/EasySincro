@@ -1,0 +1,179 @@
+
+:root { 
+    --cor-fundo-body: #e8f5e9; /* Fundo verde claro */
+    --cor-fundo-container: #c8e6c9; /* Verde suave */
+    --cor-texto-container: #1b5e20; /* Verde escuro */
+    --cor-primaria: #388e3c; /* Verde médio */
+    --cor-acento: #66bb6a; /* Verde brilhante */
+    --cor-hover: #43a047; /* Verde escuro no hover */
+    --sombra: rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 16px;
+    margin: 1.25rem;
+    background-color: var(--cor-fundo-body);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 90%;
+    padding: 2rem;
+    border: 2px solid var(--cor-primaria);
+    border-radius: 10px;
+    background-color: var(--cor-fundo-container);
+    color: var(--cor-texto-container);
+    box-shadow: 0 4px 8px var(--sombra);
+    transition: transform 0.3s ease-in-out;
+}
+
+
+h1 {
+    text-align: center;
+    color: var(--cor-primaria);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+#conteudo-form{
+    width: 100%;
+}
+
+.horarios-inputs{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+.container-grupos{
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.form-grupo1 , .form-grupo2 , .form-grupo3 , .form-grupo4{
+    width: 100%;
+    padding: 2rem;
+}
+
+.slct{
+    width: 100%;
+    margin-top: 0.6rem;
+    margin-bottom: 0.6rem;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+
+p {
+    margin: 1rem 0;
+    line-height: 1.6;
+    color: var(--cor-texto-container);
+}
+
+
+
+.botao-tutorial {
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0.8rem 1.5rem;
+    background-color: var(--cor-acento);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.botao-tutorial:hover {
+    background-color: var(--cor-hover);
+}
+
+
+
+input[type="number"], input[type="time"] {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid var(--cor-primaria);
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: var(--cor-texto-container);
+    font-size: 1rem;
+}
+
+input[type="number"]:focus, input[type="time"]:focus {
+    border-color: var(--cor-acento);
+    outline: none;
+}
+
+
+input[type="number"].input-pequeno{
+    position: static;
+    padding: 0;
+    margin: 0;
+    width: 3rem;
+}
+
+.campoInput{
+    padding-top: 1rem;
+}
+
+.checkbox-container{
+    display: flex;
+    gap: 0.07rem;
+}
+
+.containerBotao {
+    display: flex;
+    margin-top: 1.5rem;
+    justify-content: center;
+}
+
+.botao-resultados {
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 1rem 2rem;
+    background-color: var(--cor-acento);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, transform 0.2s;
+}
+
+.botao-resultados:hover {
+    background-color: var(--cor-hover);
+    transform: scale(1.05);
+}
+
+.resultados {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    border: 1px solid var(--cor-primaria);
+    border-radius: 10px;
+    background-color: var(--cor-fundo-container);
+    box-shadow: 0 4px 6px var(--sombra);
+}
+
+.invisivel {
+    display: none;
+}
+
+.vermelho{
+    color: red;
+}
+
+.verde{
+    color:green;
+}

@@ -4,28 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sincronismo</title>
-    <link  rel="stylesheet" href="style.css">
+    <link  rel="stylesheet" href="/assets/style.css">
+    <link  rel="icon" href="/images/Urania.ico">
 </head>
+
 <body>
-    <h1>Verificador de Conflitos Sincronismo</h1>
 
-    <form id="conteudo-form">
-        <div class="form-group">
-            <label for="num-grupos">Quantos grupos existem (máximo 4):</label>
-            <input type="number" id="num-grupos" min="1" max="4" required>
+    <div class="container">
+
+        <h1>Verificar Horários com Sincronismo</h1>
+        <button class="botao-tutorial" onclick="mostrarTutorial()">Quer ajuda?</button>
+        <br>
+        <br>
+
+        <section id="campo-tutorial" class="invisivel">
+            <p><strong>Passo 1:</strong> Informe a quantidade de <strong>Grupos</strong> que você possui. 
+                Cada Grupo representa um conjunto de turmas que seguem uma mesma configuração de horário.</p>
+            <p><strong>Passo 2:</strong> Selecione a quantidade de aulas que cada grupo possui <strong>no total</strong>.</p>
+            <p><strong>Passo 3:</strong> Depois que os campos de horários de aulas forem criados, basta 
+            informar o horário de início da primeira aula de algum Grupo, depois a duração da aula em minutos.
+            Os próximos campos serão preenchidos automaticamente.</p>
+            <p><strong>Passo 4:</strong> Marque as <strong>caixas</strong>, indicando após quais aulas as turmas do Grupo
+                terão intervalo. Depois de marcar, informe a duração do intervalo em minutos.</p>
+            <p>( Note que você pode alterar qualquer horário e duração a qualquer momento e os horários são atualizados )</p>
+            <p><strong>Passo 5:</strong> Clique no botão Comparar Horários e será feita a análise dos dados, 
+            em seguida será apresentado na tela uma lista que auxiliará no cadastro de Sincronismo do Urânia UP, 
+            indicando quais opções deve informar no programa.</p>
+            <br>
+            <br>
+            <p><strong>Detalhe:</strong> Se após um Professor lecionar para um certo Grupo, em seguida para outro Grupo e tiver que 
+                esperar por no mínimo 20 minutos para a aula da Turma acabar, será considerado <strong>
+                Ruim</strong>.
+            </p>
+            <br>
+        </section>
+
+        <form id="conteudo-form">
+            <div class="form-group">
+                <label for="num-grupos">Quantos grupos existem (mínimo 1 e máximo 4):</label>
+                <input type="number" id="num-grupos" min="1" max="4" required>
+            </div>
+
+            <div class="horarios-inputs"></div>
+
+        </form>
+
+
+        <div class="containerBotao">
+            <button id="botaoComparar" class="botao-resultados invisivel" onclick="verificarCadastros()">Comparar Horários</button>
         </div>
+        
+        <div id="resultados" class="resultados invisivel"></div>
 
-        <div class="horarios-inputs"></div>
-
-    </form>
-
-
-    <div class="containerBotao">
-        <button id="botaoComparar" class="button invisivel" onclick="verificarCadastros()">Comparar Horários</button>
     </div>
-    
-    <div id="resultados" class="resultados invisivel"></div>
-
+   
     <script src="app.js"></script>
+    
+
 </body>
+
 </html>
