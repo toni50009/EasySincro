@@ -29,10 +29,13 @@ document.getElementById("num-grupos").addEventListener("input", function () {
     if (numGrupos >= 2 && numGrupos <= 4) {
         for (let i = 1; i <= numGrupos; i++) {
             criarDivGrupo(i, horariosInputs);
+            botaoComparar.classList.remove("invisivel");
         }
+    }else{
+        botaoComparar.classList.add("invisivel");
     }
 
-    botaoComparar.classList.add("invisivel");
+
 });
 
 // Atualiza o objeto `grupos` com o número de grupos especificado
@@ -70,12 +73,6 @@ function definirQtdAulas(grupoId) {
     const qtdAulas = parseInt(document.getElementById(`quantidadeAulas-grupo${grupoId}`).value);
     const divGrupo = document.querySelector(`.form-grupo${grupoId}`);
     divGrupo.querySelectorAll(".campoInput").forEach((campo) => campo.remove());
-
-    if(qtdAulas != "0"){
-        botaoComparar.classList.remove("invisivel");
-    }else{
-        botaoComparar.classList.add("invisivel");
-    }
 
     for (let i = 1; i <= qtdAulas; i++) {
         criarCampoAula(grupoId, i, divGrupo, qtdAulas, i);
@@ -251,6 +248,8 @@ function verificarCadastros() {
 // Função para comparar os horários e mostrar o resultado na tela
     function compararHorarios() {
         const resultadosDiv = document.getElementById("resultados");
+        const conteudoSemResultado = document.getElementById("container-conteudo");
+        const campoResultado = document.getElementById("campo-resultados");
         resultadosDiv.innerHTML = ""; // Limpa os resultados anteriores
         resultadosDiv.classList.remove("invisivel");
     
@@ -286,10 +285,20 @@ function verificarCadastros() {
                             resultadosDiv.innerHTML += `
                                 <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, pode  ter a próxima aula com turma do Grupo ${gruposIds[j]}? <span class="verde">SIM</span></p>`;
                         }
+
                     }
                 }
             }
         }
+         // mostrar somente resultado na tela
+         conteudoSemResultado.classList.add("invisivel");
+         campoResultado.style = "display: flex";
+         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
 
+
+// resetar a página
+function resetar(){
+   location.reload();
+}
