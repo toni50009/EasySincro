@@ -75,31 +75,37 @@ function definirQtdAulas(grupoId) {
     divGrupo.querySelectorAll(".campoInput").forEach((campo) => campo.remove());
 
     for (let i = 1; i <= qtdAulas; i++) {
-        criarCampoAula(grupoId, i, divGrupo, qtdAulas);
+        criarCampoAula(grupoId ,i , divGrupo, qtdAulas);
     }
     grupos[grupoId] = Array(qtdAulas).fill({ horarioInicio: null, duracao: 0, intervalo: 0 });
     console.log(grupos);
 }
 
 // Cria os campos de inputs para uma aula específica
-function criarCampoAula(grupoId, aulaId, container, checadorQuantidade) {
+function criarCampoAula(grupoId, aulaId, container, contador) {
     const campoInputs = document.createElement("div");
     campoInputs.className = "campoInput";
-    restringirCampoInput(campoInputs, checadorQuantidade, grupoId, aulaId);
+    container.appendChild(campoInputs);
+    restringirCampoInput(campoInputs, grupoId, aulaId, contador);
 
     const checkbox = campoInputs.querySelector(`#checkbox${grupoId}_${aulaId}`);
     const labelIntervalo = campoInputs.querySelector(`label[for="duracaoIntervalo${grupoId}_${aulaId}"]`);
     const inputIntervalo = campoInputs.querySelector(`#duracaoIntervalo${grupoId}_${aulaId}`);
 
-    if(checkbox){
+    if (checkbox && labelIntervalo && inputIntervalo) {
         checkbox.addEventListener("change", () => {
-        const display = checkbox.checked ? "block" : "none";
-        labelIntervalo.style.display = display;
-        inputIntervalo.style.display = display;
-    });
-}
-
-    container.appendChild(campoInputs);
+            if (checkbox.checked) {
+                labelIntervalo.style.display = "block";
+                inputIntervalo.style.display = "block";
+                inputIntervalo.disabled = false;
+            } else {
+                labelIntervalo.style.display = "none";
+                inputIntervalo.style.display = "none";
+                inputIntervalo.value = "";
+                inputIntervalo.disabled = true;
+            }
+        });
+    }
 }
 
 
@@ -109,9 +115,13 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
     const horarioAtual = document.getElementById(`horarioInicio${grupoId}_${checkAula}`).value;
     const duracaoAtual = parseInt(document.getElementById(`duracao${grupoId}_${checkAula}`).value) || 0;
     const intervaloCheckbox = document.getElementById(`checkbox${grupoId}_${checkAula}`);
-    const intervaloAtual = intervaloCheckbox.checked
+    let intervaloAtual;
+
+    if(intervaloCheckbox != null){
+        intervaloAtual = intervaloCheckbox.checked
         ? parseInt(document.getElementById(`duracaoIntervalo${grupoId}_${checkAula}`).value) || 0
         : 0;
+    }
 
     // Valida se o horário atual foi preenchido
     if (!horarioAtual) return;
@@ -134,40 +144,35 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
     console.log(grupos);
 }
 
+
+//preencher os próximos horários e atualizar a array grupos
 function preencherProximosHorarios(checkAula, horarioAtualEmMinutos, duracaoPadraoAula, grupoId) {
     let proximaAula = checkAula + 1;
 
     while (document.getElementById(`horarioInicio${grupoId}_${proximaAula}`)) {
         const proximoHorarioInput = document.getElementById(`horarioInicio${grupoId}_${proximaAula}`);
         const proximaDuracaoInput = document.getElementById(`duracao${grupoId}_${proximaAula}`);
-        const proximoIntervaloCheckbox = document.getElementById(`checkbox${grupoId}_${proximaAula}`);
-        const proximoIntervaloInput = document.getElementById(`duracaoIntervalo${grupoId}_${proximaAula}`);
 
         // Preenche o próximo horário
         proximoHorarioInput.value = converterEmHoras(horarioAtualEmMinutos);
 
         // Atualiza a duração padrão para os campos subsequentes
-        proximaDuracaoInput.value = duracaoPadraoAula;
+        proximaDuracaoInput.value = duracaoPadraoAula || "";
 
-        // Preenche o intervalo, se o checkbox estiver marcado
-        if (proximoIntervaloCheckbox.checked && (proximoIntervaloInput.value === "" || parseInt(proximoIntervaloInput.value) === 0)) {
-            proximoIntervaloInput.value = parseInt(document.getElementById(`duracaoIntervalo${grupoId}_${checkAula}`).value) || 0;
-        }
+
 
         // Incrementa o horário com a duração e o intervalo
         const proximaDuracao = parseInt(proximaDuracaoInput.value) || duracaoPadraoAula;
-        const proximoIntervalo = proximoIntervaloCheckbox.checked
-            ? parseInt(proximoIntervaloInput.value) || 0
-            : 0;
+
 
         // Atualiza o objeto do grupo com os próximos valores
         grupos[grupoId][proximaAula - 1] = {
         horarioInicio: converterEmHoras(horarioAtualEmMinutos),
         duracao: proximaDuracao,
-        intervalo: proximoIntervalo,
+        intervalo: 0,
         };
 
-        horarioAtualEmMinutos += proximaDuracao + proximoIntervalo;
+        horarioAtualEmMinutos += proximaDuracao;
         proximaAula++;
     }
 }
@@ -199,13 +204,19 @@ function verificarCadastros() {
             return;
         }
 
-        // Verifica se alguma aula está com cadastro incompleto
-        for (const aula of aulas) {
-            if (aulas.length != 0 && !aula.horarioInicio) {
-                alert(`Algum cadastro está faltando no grupo ${grupoId}.`);
+        //Verifica cada aula do grupo
+        for(let aulaId = 1; aulaId <= aulas.length; aulaId++){
+            const duracaoInput = document.getElementById(`duracao${grupoId}_${aulaId}`);
+
+            // Verifica se a duração desta aula analisada é nula ou 0
+            const duracaoValor = parseInt(duracaoInput.value) || 0;
+            if(duracaoValor === 0){
+                alert(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser 0!`);
                 return;
             }
+
         }
+
     }
     compararHorarios();
 }
@@ -270,41 +281,115 @@ function resetar(){
 }
 
 
-function restringirCampoInput(campoInputs, grupoId, aulaId, i){
-    if(aulaId == 1){
+function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
+    
+    if(aulaId === 1){
+
+    //Primeira aula
     campoInputs.innerHTML = `
     <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
     <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
     <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-    <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+    <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
         <div class="checkbox-container">
-            <label for="checkbox${grupoId}_${aulaId}">Intervalo?</label>
+            <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
             <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
 
-            <label for="duracaoIntervalo${grupoId}_${aulaId}">Duração:</label>
-            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" >Duração:</label>
+            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
         </div>
-            `;
-    }else if(aulaId > 1){
-        campoInputs.innerHTML = `
-        <label for="horarioInicio${grupoId}_${aulaId}" style="disabled" >Horário de início <strong>${aulaId}</strong>ªAula:</label>
-        <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-    
-        <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-        <input type="number" id="duracao${grupoId}_${aulaId}" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-    
-            <div class="checkbox-container">
-                <label for="checkbox${grupoId}_${aulaId}">Intervalo?</label>
-                <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-    
-                <label for="duracaoIntervalo${grupoId}_${aulaId}">Duração:</label>
-                <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-            </div>
-                `;
-    
+            `
+            if(document.getElementById(`horarioInicio${grupoId}_${aulaId}`).textContent == ""){
+                adicionarMensagemInput(`duracao${grupoId}_${aulaId}`, "Defina o horário de início primeiro!");
             }
 
+            ;
+    }else if(aulaId > 1){
+        campoInputs.innerHTML = `
+        <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
+        <input type="time" id="horarioInicio${grupoId}_${aulaId}">
+    
+        <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+        <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+    
+            <div class="checkbox-container">
+                <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
+                <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+    
+                <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração:</label>
+                <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+            </div>
+                `
+                ;
+     // Adiciona a mensagem de tooltip ao campo de horário
+     adicionarMensagemInput(`horarioInicio${grupoId}_${aulaId}`, "Defina o horário na 1ª aula!");
+     
+        if(aulaId === contador ){
+            
+            campoInputs.innerHTML = `
+            <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
+            <input type="time" id="horarioInicio${grupoId}_${aulaId}">
+        
+            <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+            <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+        
+                    `;
+        }
+            }
+
+
+}
+
+
+
+// criar mensagem input travado
+
+function adicionarMensagemInput(inputId, mensagem) {
+    const eleInput = document.getElementById(inputId);
+
+    if (!eleInput) {
+        console.error(`Elemento com ID ${inputId} não encontrado.`);
+        return;
+    }
+
+    // Cria o tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = "tooltip";
+    tooltip.style.position = "absolute";
+    tooltip.style.backgroundColor = "#333";
+    tooltip.style.color = "#fff";
+    tooltip.style.padding = "5px";
+    tooltip.style.borderRadius = "5px";
+    tooltip.style.fontSize = "12px";
+    tooltip.style.visibility = "hidden";
+    tooltip.style.zIndex = "1000";
+    tooltip.textContent = mensagem;
+
+    document.body.appendChild(tooltip);
+
+    // Evento para bloquear digitação e mostrar o tooltip
+    eleInput.addEventListener("keydown", (event) => {
+        const rect = eleInput.getBoundingClientRect();
+
+        // Posiciona o tooltip acima do campo
+        tooltip.style.top = `${rect.top - 40 + window.scrollY}px`;
+        tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + window.scrollX}px`;
+
+        tooltip.style.visibility = "visible";
+
+        // Oculta o tooltip após 2 segundos
+        setTimeout(() => {
+            tooltip.style.visibility = "hidden";
+        }, 2000);
+
+        event.preventDefault(); // Bloqueia a digitação
+    });
+
+    // Remove o tooltip quando o campo perde o foco
+    eleInput.addEventListener("blur", () => {
+        tooltip.style.visibility = "hidden";
+    });
 }
 
