@@ -396,28 +396,44 @@ function verificarCadastros() {
 
     }
 
-function criarMensagemErros(mensagem){
-    const corpo = document.querySelector("body");
-    return corpo.innerHTML += `
-    <div class="overlay"></div>
-    <section class="container-erro">
-        <p><span class="branco">${mensagem}</span></p>
-        <button  class="botao-tutorial" onclick="voltarTela()">Ok!</button>
-    </section>
-    `
-    ;
-}
+    function criarMensagemErros(mensagem) {
+        const corpo = document.getElementById("campo-erro");
+    
+        // Adicionar a mensagem de erro
+        corpo.innerHTML = `
+        <section id="campo-erro" class="container-erro overlay">
+            <p><span class="branco">${mensagem}</span></p>
+            <button class="botao-tutorial" onclick="voltarTela()">Ok!</button>
+        </section>
+        `;
+    
+        // Bloquear todos os botões e inputs dentro do container principal
+        bloquearInteracao(true);
+    }
+    
+    function voltarTela() {
+        const secao = document.querySelector(".container-erro");
+        if(secao){
+        secao.remove();
+        }
+    
+        // Reativar os botões e inputs após a remoção do container de erro
+        bloquearInteracao(false);
+    }
+    
 
 
-// Voltar para a página depois da mensagem de erro
-function voltarTela(){
-    const secao = document.querySelector(".container-erro");
-    const pseudo = document.querySelector('.overlay');
-    secao.style.display = "none";
-    pseudo.style.display = "none";
-
-}
-
+    function bloquearInteracao(bloquear) {
+        // Selecionar todos os botões e inputs dentro do container principal
+        const containerPrincipal = document.querySelector(".container"); // Substitua pelo seletor correto se necessário
+    
+        // Bloqueia os inputs com a classe bloqueado
+        if(bloquear){
+            containerPrincipal.classList.add("bloqueado");
+        }else{
+            containerPrincipal.classList.remove("bloqueado");
+        }
+    }
 
 // resetar a página
 function resetar(){

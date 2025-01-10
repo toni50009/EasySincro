@@ -37,17 +37,6 @@ body {
     transition: transform 0.3s ease-in-out;
 }
 
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5); /* Fundo semitransparente */
-    z-index: 999; /* Deve ser menor que o da div */
-    pointer-events: none; /* Não bloqueia tooltips */
-}
-
 
 .container-erro {
     position: fixed;
@@ -75,6 +64,12 @@ body {
 .container-erro:focus {
     outline: 3px solid rgba(255, 255, 255, 0.8);
 }
+
+.bloqueado {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
 
 .branco{
     color:white;
@@ -177,9 +172,11 @@ input[type="number"].input-pequeno{
     width: 3rem;
 }
 
+
 .campoInput{
     padding-top: 1rem;
 }
+
 
 .checkbox-container{
     display: flex;
