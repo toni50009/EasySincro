@@ -2,7 +2,7 @@
 let grupos = {};
 
 
-//mostrar/esconder tutorial
+//mostrar,esconder tutorial
 function mostrarTutorial(){
        const campoTutorial = document.getElementById("campo-tutorial");
        if(campoTutorial.classList.contains("invisivel")){
@@ -38,7 +38,9 @@ document.getElementById("num-grupos").addEventListener("input", function () {
 
 });
 
-// Atualiza o objeto `grupos` com o número de grupos especificado
+
+
+// Atualiza o objeto "grupos" com o número de grupos especificado
 function atualizarGrupos(numGrupos) {
     const novosGrupos = {};
     for (let i = 1; i <= numGrupos; i++) {
@@ -107,6 +109,118 @@ function criarCampoAula(grupoId, aulaId, container, contador) {
         });
     }
 }
+
+
+// criar tooltip input travado
+function adicionarMensagemInput(inputId) {
+    const eleInput = document.getElementById(inputId);
+
+    if (!eleInput) {
+        console.error(`Elemento com ID ${inputId} não encontrado.`);
+        return;
+    }
+
+    // Cria o tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = "tooltip";
+    tooltip.style.position = "absolute";
+    tooltip.style.backgroundColor = "#333";
+    tooltip.style.color = "#fff";
+    tooltip.style.padding = "5px";
+    tooltip.style.borderRadius = "5px";
+    tooltip.style.fontSize = "12px";
+    tooltip.style.visibility = "hidden";
+    tooltip.style.zIndex = "1001";
+    tooltip.textContent = "Defina o horário na 1ª aula!";
+
+    document.body.appendChild(tooltip);
+
+    // Evento para bloquear digitação e mostrar o tooltip
+    eleInput.addEventListener("keydown", (event) => {
+        const rect = eleInput.getBoundingClientRect();
+
+        // Posiciona o tooltip acima do campo
+        tooltip.style.top = `${rect.top - 40 + window.scrollY}px`;
+        tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + window.scrollX}px`;
+
+        tooltip.style.visibility = "visible";
+
+        // Oculta o tooltip após 2 segundos
+        setTimeout(() => {
+            tooltip.style.visibility = "hidden";
+        }, 2000);
+
+        event.preventDefault(); // Bloqueia a digitação
+    });
+
+    // Remove o tooltip quando o campo perde o foco
+    eleInput.addEventListener("blur", () => {
+        tooltip.style.visibility = "hidden";
+    });
+}
+
+
+
+// especifica como deve criar o campo input, dependendo de qual o Id da aula
+function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
+    
+    if(aulaId === 1){
+
+    //Primeira aula
+    campoInputs.innerHTML = `
+    <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
+    <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+
+    <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+    <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})" >
+
+        <div class="checkbox-container">
+            <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
+            <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+
+            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" >Duração:</label>
+            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+        </div>
+            `;
+
+        
+    }else if(aulaId > 1){
+        campoInputs.innerHTML = `
+        <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
+        <input type="time" id="horarioInicio${grupoId}_${aulaId}">
+    
+        <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+        <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+    
+            <div class="checkbox-container">
+                <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
+                <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+    
+                <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração:</label>
+                <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+            </div>
+                `
+                ;
+     // Adiciona a mensagem de tooltip ao campo de horário
+     adicionarMensagemInput(`horarioInicio${grupoId}_${aulaId}`);
+     
+        if(aulaId === contador ){
+            
+            campoInputs.innerHTML = `
+            <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
+            <input type="time" id="horarioInicio${grupoId}_${aulaId}">
+        
+            <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+            <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+        
+                    `;
+        }
+            }
+
+
+}
+
+
 
 
 
@@ -200,9 +314,17 @@ function verificarCadastros() {
 
         // Verifica se o grupo está vazio
         if (aulas.length === 0) {
-            alert(`O grupo ${grupoId} está vazio.`);
+            criarMensagemErros(`O Grupo ${grupoId} está vazio!`);
             return;
         }
+
+        //Verifica se o horarioInicio é nulo ou vazio
+        if(!document.getElementById(`horarioInicio${grupoId}_1`).value){
+            criarMensagemErros(`Informe o horário de início da primeira aula do grupo ${grupoId}!`);
+            return;
+        } 
+
+
 
         //Verifica cada aula do grupo
         for(let aulaId = 1; aulaId <= aulas.length; aulaId++){
@@ -211,7 +333,8 @@ function verificarCadastros() {
             // Verifica se a duração desta aula analisada é nula ou 0
             const duracaoValor = parseInt(duracaoInput.value) || 0;
             if(duracaoValor === 0){
-                alert(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser 0!`);
+                document.getElementById("container-erro").classList.remove("invisivel").scrollIntoView({ behavior: "smooth"});
+                criarMensagemErros(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser 0!`);
                 return;
             }
 
@@ -272,7 +395,28 @@ function verificarCadastros() {
          campoResultado.scrollIntoView({ behavior: "smooth"});
 
     }
-    
+
+function criarMensagemErros(mensagem){
+    const corpo = document.querySelector("body");
+    return corpo.innerHTML += `
+    <div class="overlay"></div>
+    <section class="container-erro">
+        <p><span class="branco">${mensagem}</span></p>
+        <button  class="botao-tutorial" onclick="voltarTela()">Ok!</button>
+    </section>
+    `
+    ;
+}
+
+
+// Voltar para a página depois da mensagem de erro
+function voltarTela(){
+    const secao = document.querySelector(".container-erro");
+    const pseudo = document.querySelector('.overlay');
+    secao.style.display = "none";
+    pseudo.style.display = "none";
+
+}
 
 
 // resetar a página
@@ -281,115 +425,8 @@ function resetar(){
 }
 
 
-function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
-    
-    if(aulaId === 1){
-
-    //Primeira aula
-    campoInputs.innerHTML = `
-    <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
-    <input type="time" id="horarioInicio${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-    <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-    <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-        <div class="checkbox-container">
-            <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
-            <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-
-            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" >Duração:</label>
-            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-        </div>
-            `
-            if(document.getElementById(`horarioInicio${grupoId}_${aulaId}`).textContent == ""){
-                adicionarMensagemInput(`duracao${grupoId}_${aulaId}`, "Defina o horário de início primeiro!");
-            }
-
-            ;
-    }else if(aulaId > 1){
-        campoInputs.innerHTML = `
-        <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
-        <input type="time" id="horarioInicio${grupoId}_${aulaId}">
-    
-        <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-        <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-    
-            <div class="checkbox-container">
-                <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
-                <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-    
-                <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração:</label>
-                <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-            </div>
-                `
-                ;
-     // Adiciona a mensagem de tooltip ao campo de horário
-     adicionarMensagemInput(`horarioInicio${grupoId}_${aulaId}`, "Defina o horário na 1ª aula!");
-     
-        if(aulaId === contador ){
-            
-            campoInputs.innerHTML = `
-            <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
-            <input type="time" id="horarioInicio${grupoId}_${aulaId}">
-        
-            <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-            <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-        
-                    `;
-        }
-            }
-
-
-}
 
 
 
-// criar mensagem input travado
 
-function adicionarMensagemInput(inputId, mensagem) {
-    const eleInput = document.getElementById(inputId);
-
-    if (!eleInput) {
-        console.error(`Elemento com ID ${inputId} não encontrado.`);
-        return;
-    }
-
-    // Cria o tooltip
-    const tooltip = document.createElement('div');
-    tooltip.className = "tooltip";
-    tooltip.style.position = "absolute";
-    tooltip.style.backgroundColor = "#333";
-    tooltip.style.color = "#fff";
-    tooltip.style.padding = "5px";
-    tooltip.style.borderRadius = "5px";
-    tooltip.style.fontSize = "12px";
-    tooltip.style.visibility = "hidden";
-    tooltip.style.zIndex = "1000";
-    tooltip.textContent = mensagem;
-
-    document.body.appendChild(tooltip);
-
-    // Evento para bloquear digitação e mostrar o tooltip
-    eleInput.addEventListener("keydown", (event) => {
-        const rect = eleInput.getBoundingClientRect();
-
-        // Posiciona o tooltip acima do campo
-        tooltip.style.top = `${rect.top - 40 + window.scrollY}px`;
-        tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + window.scrollX}px`;
-
-        tooltip.style.visibility = "visible";
-
-        // Oculta o tooltip após 2 segundos
-        setTimeout(() => {
-            tooltip.style.visibility = "hidden";
-        }, 2000);
-
-        event.preventDefault(); // Bloqueia a digitação
-    });
-
-    // Remove o tooltip quando o campo perde o foco
-    eleInput.addEventListener("blur", () => {
-        tooltip.style.visibility = "hidden";
-    });
-}
 
