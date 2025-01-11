@@ -333,8 +333,14 @@ function verificarCadastros() {
             // Verifica se a duração desta aula analisada é nula ou 0
             const duracaoValor = parseInt(duracaoInput.value) || 0;
             if(duracaoValor === 0){
-                document.getElementById("container-erro").classList.remove("invisivel").scrollIntoView({ behavior: "smooth"});
+                document.getElementById("campo-erro").classList.remove("invisivel");
                 criarMensagemErros(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser 0!`);
+                return;
+            }
+            // caso seja negativa
+            else if(duracaoValor < 0 ){
+                document.getElementById("campo-erro").classList.remove("invisivel");
+                criarMensagemErros(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser negativa!`);
                 return;
             }
 
