@@ -80,7 +80,6 @@ function definirQtdAulas(grupoId) {
         criarCampoAula(grupoId ,i , divGrupo, qtdAulas);
     }
     grupos[grupoId] = Array(qtdAulas).fill({ horarioInicio: null, duracao: 0, intervalo: 0 });
-    console.log(grupos);
 }
 
 // Cria os campos de inputs para uma aula específica
@@ -111,53 +110,6 @@ function criarCampoAula(grupoId, aulaId, container, contador) {
 }
 
 
-// criar tooltip input travado
-function adicionarMensagemInput(inputId) {
-    const eleInput = document.getElementById(inputId);
-
-    if (!eleInput) {
-        console.error(`Elemento com ID ${inputId} não encontrado.`);
-        return;
-    }
-
-    // Cria o tooltip
-    const tooltip = document.createElement('div');
-    tooltip.className = "tooltip";
-    tooltip.style.position = "absolute";
-    tooltip.style.backgroundColor = "#333";
-    tooltip.style.color = "#fff";
-    tooltip.style.padding = "5px";
-    tooltip.style.borderRadius = "5px";
-    tooltip.style.fontSize = "12px";
-    tooltip.style.visibility = "hidden";
-    tooltip.style.zIndex = "1001";
-    tooltip.textContent = "Defina o horário na 1ª aula!";
-
-    document.body.appendChild(tooltip);
-
-    // Evento para bloquear digitação e mostrar o tooltip
-    eleInput.addEventListener("keydown", (event) => {
-        const rect = eleInput.getBoundingClientRect();
-
-        // Posiciona o tooltip acima do campo
-        tooltip.style.top = `${rect.top - 40 + window.scrollY}px`;
-        tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + window.scrollX}px`;
-
-        tooltip.style.visibility = "visible";
-
-        // Oculta o tooltip após 2 segundos
-        setTimeout(() => {
-            tooltip.style.visibility = "hidden";
-        }, 2000);
-
-        event.preventDefault(); // Bloqueia a digitação
-    });
-
-    // Remove o tooltip quando o campo perde o foco
-    eleInput.addEventListener("blur", () => {
-        tooltip.style.visibility = "hidden";
-    });
-}
 
 
 
@@ -204,9 +156,11 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
                     `
                 ;
      // Adiciona a mensagem de tooltip ao campo de horário
-     adicionarMensagemInput(`horarioInicio${grupoId}_${aulaId}`);
+     document.getElementById(`horarioInicio${grupoId}_${aulaId}`).addEventListener("keydown", (event) => {
+        criarMensagemErros(`Defina o horário de início somente na primeira aula!`, `horarioInicio${grupoId}_${aulaId}`);
+        event.preventDefault();
+    });
      bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${aulaId}`);
-     
         if(aulaId === contador ){
             
             campoInputs.innerHTML = `
@@ -218,8 +172,13 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
                 <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
             </div>
                         `;
-                    adicionarMensagemInput(`horarioInicio${grupoId}_${aulaId}`);
-                    bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${aulaId}`);
+    // Adiciona a mensagem de tooltip ao campo de horário
+     document.getElementById(`horarioInicio${grupoId}_${aulaId}`).addEventListener("keydown", (event) => {
+        criarMensagemErros(`Defina o horário de início somente na primeira aula!`, `horarioInicio${grupoId}_${aulaId}`);
+        event.preventDefault();
+    });
+                    
+             bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${aulaId}`);
         }
             }
 
@@ -250,8 +209,8 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
         let contadorLoop = grupos[grupoId].length - 1;
         for(let i = 0; i < contadorLoop; i ++ ){
             if(document.getElementById(`horarioInicio${grupoId}_${(checkAula + (i+1))}`)){
-            console.log("Chamou");
             bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${(checkAula + (i+1))}`);
+
         }
     }
         return;
@@ -275,7 +234,6 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
 
     // Chama a função para preencher os próximos horários e durações
     preencherProximosHorarios(checkAula, somaDuracao, duracaoAtual, grupoId);
-    console.log(grupos);
 }
 
 
@@ -340,13 +298,13 @@ function verificarCadastros() {
 
         // Verifica se o grupo está vazio
         if (aulas.length === 0) {
-            criarMensagemErros(`O Grupo ${grupoId} está vazio!`);
+            criarMensagemErros(`O Grupo ${grupoId} está vazio!`, `quantidadeAulas-grupo${grupoId}`);
             return;
         }
 
         //Verifica se o horarioInicio é nulo ou vazio
         if(!document.getElementById(`horarioInicio${grupoId}_1`).value){
-            criarMensagemErros(`Informe o horário de início da primeira aula do grupo ${grupoId}!`);
+            criarMensagemErros(`Informe o horário de início da primeira aula do grupo ${grupoId}!`,`horarioInicio${grupoId}_1`);
             return;
         } 
 
@@ -360,13 +318,13 @@ function verificarCadastros() {
             const duracaoValor = parseInt(duracaoInput.value) || 0;
             if(duracaoValor === 0){
                 document.getElementById("campo-erro").classList.remove("invisivel");
-                criarMensagemErros(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser 0!`);
+                criarMensagemErros(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser 0!`, `duracao${grupoId}_${aulaId}`);
                 return;
             }
             // caso seja negativa
             else if(duracaoValor < 0 ){
                 document.getElementById("campo-erro").classList.remove("invisivel");
-                criarMensagemErros(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser negativa!`);
+                criarMensagemErros(`A duração da ${aulaId}ª aula do grupo ${grupoId} não pode ser negativa!`, `duracao${grupoId}_${aulaId}` );
                 return;
             }
 
@@ -381,14 +339,12 @@ function verificarCadastros() {
                     if(checkboxInput && duracaoIntervaloInput){
                         if(duracaoIntervaloInput  && duracaoIntervaloInput.value < 0 ){
                             document.getElementById("campo-erro").classList.remove("invisivel");
-                            criarMensagemErros(`A duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId} não pode ser negativa!`);
+                            criarMensagemErros(`A duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId} não pode ser negativa!`, `duracaoIntervalo${grupoId}_${aulaId}`);
                             return;
                         }else if(checkboxInput.checked && duracaoIntervaloInput.value == 0){
                             document.getElementById("campo-erro").classList.remove("invisivel");
-                            criarMensagemErros(`Informe a duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId}.`);
+                            criarMensagemErros(`Informe a duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId}.`, `duracaoIntervalo${grupoId}_${aulaId}`);
                             return;
-                        }else{
-                            console.log(checkboxInput.checked);
                         }
                     }
 
@@ -446,13 +402,13 @@ function verificarCadastros() {
         }
          // mostrar somente resultado na tela
          campoResultado.style = "display: flex";
-         campoResultado.scrollIntoView({ behavior: "smooth"});
+         campoResultado.scrollIntoView({block: "start", inline: "nearest", behavior: "smooth"});
          document.getElementById("container__conteudo__extra").style.display = "block";
 
     }
 
-    function criarMensagemErros(mensagem) {
-        const corpo = document.getElementById("campo-erro");
+    function criarMensagemErros(mensagem, campoReferencia) {
+        const corpo = document.getElementById("campo-erro"); 
     
         // Adicionar a mensagem de erro
         corpo.innerHTML = `
@@ -461,9 +417,13 @@ function verificarCadastros() {
             <button class="botao-tutorial" onclick="voltarTela()">Ok!</button>
         </section>
         `;
-    
+
         // Bloquear todos os botões e inputs dentro do container principal
         bloquearInteracao(true, "container");
+
+        
+        //Move a tela e centraliza o campo com erro
+        document.getElementById(`${campoReferencia}`).scrollIntoView({block: "center", inline: "nearest", behavior: "smooth"});
     }
 
 
@@ -491,6 +451,7 @@ function verificarCadastros() {
             containerPrincipal.classList.remove("bloqueado");
         }
     }
+
 
 
 

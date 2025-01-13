@@ -27,14 +27,13 @@ body {
 }
 
 .container {
-    width: 90%;
+    width: 100%;
     padding: 0.2rem;
     border: 2px solid var(--cor-primaria);
     border-radius: 10px;
     background-color: var(--cor-fundo-container);
     color: var(--cor-texto-container);
     box-shadow: 0 4px 8px var(--sombra);
-    transition: transform 0.3s ease-in-out;
 }
 
 
@@ -234,5 +233,7 @@ input[type="number"].input-pequeno{
     flex-direction: column;
     align-items: center;
 }
+
+
 
 
