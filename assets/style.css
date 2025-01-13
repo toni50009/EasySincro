@@ -177,7 +177,7 @@ input[type="number"].input-pequeno{
 }
 
 
-.checkbox-container{
+.intervalo-container{
     display: flex;
     gap: 0.07rem;
 }

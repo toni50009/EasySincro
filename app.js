@@ -89,24 +89,9 @@ function criarCampoAula(grupoId, aulaId, container, contador) {
     container.appendChild(campoInputs);
     restringirCampoInput(campoInputs, grupoId, aulaId, contador);
 
-    const checkbox = campoInputs.querySelector(`#checkbox${grupoId}_${aulaId}`);
     const labelIntervalo = campoInputs.querySelector(`label[for="duracaoIntervalo${grupoId}_${aulaId}"]`);
     const inputIntervalo = campoInputs.querySelector(`#duracaoIntervalo${grupoId}_${aulaId}`);
 
-    if (checkbox && labelIntervalo && inputIntervalo) {
-        checkbox.addEventListener("change", () => {
-            if (checkbox.checked) {
-                labelIntervalo.style.display = "block";
-                inputIntervalo.style.display = "block";
-                inputIntervalo.disabled = false;
-            } else {
-                labelIntervalo.style.display = "none";
-                inputIntervalo.style.display = "none";
-                inputIntervalo.value = "";
-                inputIntervalo.disabled = true;
-            }
-        });
-    }
 }
 
 
@@ -126,12 +111,11 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
     <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
     <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})" >
 
-        <div class="checkbox-container">
-            <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
-            <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+        <div class="intervalo-container">
 
-            <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;" >Duração:</label>
-            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+            <label for="duracaoIntervalo${grupoId}_${aulaId}">Duração intervalo(se houver):</label>
+            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+       
         </div>
             `;
 
@@ -145,13 +129,12 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
             <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
             <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
         
-                <div class="checkbox-container">
-                    <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
-                    <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-        
-                    <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração:</label>
-                    <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-                </div>
+                <div class="intervalo-container">
+                    
+                    <label for="duracaoIntervalo${grupoId}_${aulaId}">Duração intervalo(se houver):</label>
+                    <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+               
+                    </div>
         </div>
                     `
                 ;
@@ -193,16 +176,9 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
 function atualizarHorariosDeInicio(checkAula, grupoId) {
     const horarioAtual = document.getElementById(`horarioInicio${grupoId}_${checkAula}`).value;
     const duracaoAtual = parseInt(document.getElementById(`duracao${grupoId}_${checkAula}`).value) || 0;
-    const intervaloCheckbox = document.getElementById(`checkbox${grupoId}_${checkAula}`);
-    let intervaloAtual;
+    const intervaloAtual = parseInt(document.getElementById(`duracaoIntervalo${grupoId}_${checkAula}`).value) || 0;
 
 
-
-    if(intervaloCheckbox != null){
-        intervaloAtual = intervaloCheckbox.checked
-        ? parseInt(document.getElementById(`duracaoIntervalo${grupoId}_${checkAula}`).value) || 0
-        : 0;
-    }
 
     // Valida se o horário atual foi preenchido
     if (!horarioAtual){
@@ -227,23 +203,27 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
     };
 
 
+    //Checar no Console
+    console.log(grupos);
+
     
 
     // Soma a duração da aula e o intervalo
     const somaDuracao = horarioAtualEmMinutos + duracaoAtual + intervaloAtual;
 
     // Chama a função para preencher os próximos horários e durações
-    preencherProximosHorarios(checkAula, somaDuracao, duracaoAtual, grupoId);
+    preencherProximosHorarios(checkAula, somaDuracao, duracaoAtual, grupoId, intervaloAtual);
 }
 
 
 //preencher os próximos horários e atualizar a array grupos
-function preencherProximosHorarios(checkAula, horarioAtualEmMinutos, duracaoPadraoAula, grupoId) {
+function preencherProximosHorarios(checkAula, horarioAtualEmMinutos, duracaoPadraoAula, grupoId, checkIntervalo) {
     let proximaAula = checkAula + 1;
 
     while (document.getElementById(`horarioInicio${grupoId}_${proximaAula}`)) {
         const proximoHorarioInput = document.getElementById(`horarioInicio${grupoId}_${proximaAula}`);
         const proximaDuracaoInput = document.getElementById(`duracao${grupoId}_${proximaAula}`);
+        const proximoIntervaloInput = document.getElementById(`duracaoIntervalo${grupoId}_${proximaAula}`);
 
         if(checkAula == 1){
             if(horarioAtualEmMinutos && duracaoPadraoAula > 0){
@@ -262,19 +242,30 @@ function preencherProximosHorarios(checkAula, horarioAtualEmMinutos, duracaoPadr
         // Incrementa o horário com a duração e o intervalo
         const proximaDuracao = parseInt(proximaDuracaoInput.value) || duracaoPadraoAula;
 
+        console.log(grupos);
+        if(checkIntervalo > 0){
 
-        // Atualiza o objeto do grupo com os próximos valores
-        grupos[grupoId][proximaAula - 1] = {
-        horarioInicio: converterEmHoras(horarioAtualEmMinutos),
-        duracao: proximaDuracao,
-        intervalo: 0,
-        };
+            if(grupos[grupoId][proximaAula - 1].intervalo > 0){
+                grupos[grupoId][proximaAula - 1] = {
+                    horarioInicio: converterEmHoras(horarioAtualEmMinutos),
+                    duracao: proximaDuracao,
+                    intervalo: proximoIntervaloInput,
+                }
+            }else{
+                grupos[grupoId][proximaAula - 1] = {
+                    horarioInicio: converterEmHoras(horarioAtualEmMinutos),
+                    duracao: proximaDuracao,
+                    intervalo:0,
+            }
+
+    }
+
 
         horarioAtualEmMinutos += proximaDuracao;
         proximaAula++;
     }
 }
-
+}
 
 // Função para converter horário no formato HH:MM para minutos
 function converterEmMinutos(horario) {
@@ -334,14 +325,13 @@ function verificarCadastros() {
         //verifica cada intervalo
         for(let aulaId = 1; aulaId <= aulas.length; aulaId++){
             const duracaoIntervaloInput = document.getElementById(`duracaoIntervalo${grupoId}_${aulaId}`);
-            const checkboxInput = document.getElementById(`checkbox${grupoId}_${aulaId}`);
                     // caso seja negativo
-                    if(checkboxInput && duracaoIntervaloInput){
+                    if(duracaoIntervaloInput){
                         if(duracaoIntervaloInput  && duracaoIntervaloInput.value < 0 ){
                             document.getElementById("campo-erro").classList.remove("invisivel");
                             criarMensagemErros(`A duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId} não pode ser negativa!`, `duracaoIntervalo${grupoId}_${aulaId}`);
                             return;
-                        }else if(checkboxInput.checked && duracaoIntervaloInput.value == 0){
+                        }else if(duracaoIntervaloInput.value == 0){
                             document.getElementById("campo-erro").classList.remove("invisivel");
                             criarMensagemErros(`Informe a duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId}.`, `duracaoIntervalo${grupoId}_${aulaId}`);
                             return;
@@ -451,8 +441,6 @@ function verificarCadastros() {
             containerPrincipal.classList.remove("bloqueado");
         }
     }
-
-
 
 
 
