@@ -186,34 +186,40 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
         
     }else if(aulaId > 1){
         campoInputs.innerHTML = `
-        <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
-        <input type="time" id="horarioInicio${grupoId}_${aulaId}">
-    
-        <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-        <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-    
-            <div class="checkbox-container">
-                <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
-                <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-    
-                <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração:</label>
-                <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-            </div>
-                `
-                ;
-     // Adiciona a mensagem de tooltip ao campo de horário
-     adicionarMensagemInput(`horarioInicio${grupoId}_${aulaId}`);
-     
-        if(aulaId === contador ){
-            
-            campoInputs.innerHTML = `
+        <div class="bloqueio-cadastro_${grupoId}_${aulaId}">
             <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
             <input type="time" id="horarioInicio${grupoId}_${aulaId}">
         
             <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
             <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
         
-                    `;
+                <div class="checkbox-container">
+                    <label for="checkbox${grupoId}_${aulaId}">Intervalo após?</label>
+                    <input type="checkbox" id="checkbox${grupoId}_${aulaId}" onchange="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+        
+                    <label for="duracaoIntervalo${grupoId}_${aulaId}" style="display: none;">Duração:</label>
+                    <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" style="display: none;"  oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+                </div>
+        </div>
+                    `
+                ;
+     // Adiciona a mensagem de tooltip ao campo de horário
+     adicionarMensagemInput(`horarioInicio${grupoId}_${aulaId}`);
+     bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${aulaId}`);
+     
+        if(aulaId === contador ){
+            
+            campoInputs.innerHTML = `
+           <div class="bloqueio-cadastro_${grupoId}_${aulaId}">
+                <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
+                <input type="time" id="horarioInicio${grupoId}_${aulaId}">
+            
+                <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+                <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+            </div>
+                        `;
+                    adicionarMensagemInput(`horarioInicio${grupoId}_${aulaId}`);
+                    bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${aulaId}`);
         }
             }
 
@@ -231,6 +237,8 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
     const intervaloCheckbox = document.getElementById(`checkbox${grupoId}_${checkAula}`);
     let intervaloAtual;
 
+
+
     if(intervaloCheckbox != null){
         intervaloAtual = intervaloCheckbox.checked
         ? parseInt(document.getElementById(`duracaoIntervalo${grupoId}_${checkAula}`).value) || 0
@@ -238,7 +246,16 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
     }
 
     // Valida se o horário atual foi preenchido
-    if (!horarioAtual) return;
+    if (!horarioAtual){
+        let contadorLoop = grupos[grupoId].length - 1;
+        for(let i = 0; i < contadorLoop; i ++ ){
+            if(document.getElementById(`horarioInicio${grupoId}_${(checkAula + (i+1))}`)){
+            console.log("Chamou");
+            bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${(checkAula + (i+1))}`);
+        }
+    }
+        return;
+    };
 
     // Converte o horário atual para minutos
     const horarioAtualEmMinutos = converterEmMinutos(horarioAtual);
@@ -249,6 +266,9 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
         duracao: duracaoAtual,
         intervalo: intervaloAtual,
     };
+
+
+    
 
     // Soma a duração da aula e o intervalo
     const somaDuracao = horarioAtualEmMinutos + duracaoAtual + intervaloAtual;
@@ -266,6 +286,12 @@ function preencherProximosHorarios(checkAula, horarioAtualEmMinutos, duracaoPadr
     while (document.getElementById(`horarioInicio${grupoId}_${proximaAula}`)) {
         const proximoHorarioInput = document.getElementById(`horarioInicio${grupoId}_${proximaAula}`);
         const proximaDuracaoInput = document.getElementById(`duracao${grupoId}_${proximaAula}`);
+
+        if(checkAula == 1){
+            if(horarioAtualEmMinutos && duracaoPadraoAula > 0){
+                bloquearInteracao(false,`bloqueio-cadastro_${grupoId}_${proximaAula}`);
+            }
+        }
 
         // Preenche o próximo horário
         proximoHorarioInput.value = converterEmHoras(horarioAtualEmMinutos);
@@ -346,7 +372,29 @@ function verificarCadastros() {
 
         }
 
+
+        //verifica cada intervalo
+        for(let aulaId = 1; aulaId <= aulas.length; aulaId++){
+            const duracaoIntervaloInput = document.getElementById(`duracaoIntervalo${grupoId}_${aulaId}`);
+            const checkboxInput = document.getElementById(`checkbox${grupoId}_${aulaId}`);
+                    // caso seja negativo
+                    if(checkboxInput && duracaoIntervaloInput){
+                        if(duracaoIntervaloInput  && duracaoIntervaloInput.value < 0 ){
+                            document.getElementById("campo-erro").classList.remove("invisivel");
+                            criarMensagemErros(`A duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId} não pode ser negativa!`);
+                            return;
+                        }else if(checkboxInput.checked && duracaoIntervaloInput.value == 0){
+                            document.getElementById("campo-erro").classList.remove("invisivel");
+                            criarMensagemErros(`Informe a duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId}.`);
+                            return;
+                        }else{
+                            console.log(checkboxInput.checked);
+                        }
+                    }
+
+        
     }
+}
     compararHorarios();
 }
 
@@ -399,6 +447,7 @@ function verificarCadastros() {
          // mostrar somente resultado na tela
          campoResultado.style = "display: flex";
          campoResultado.scrollIntoView({ behavior: "smooth"});
+         document.getElementById("container__conteudo__extra").style.display = "block";
 
     }
 
@@ -414,8 +463,10 @@ function verificarCadastros() {
         `;
     
         // Bloquear todos os botões e inputs dentro do container principal
-        bloquearInteracao(true);
+        bloquearInteracao(true, "container");
     }
+
+
     
     function voltarTela() {
         const secao = document.querySelector(".container-erro");
@@ -424,14 +475,14 @@ function verificarCadastros() {
         }
     
         // Reativar os botões e inputs após a remoção do container de erro
-        bloquearInteracao(false);
+        bloquearInteracao(false, "container");
     }
     
 
 
-    function bloquearInteracao(bloquear) {
+    function bloquearInteracao(bloquear, containerId) {
         // Selecionar todos os botões e inputs dentro do container principal
-        const containerPrincipal = document.querySelector(".container"); // Substitua pelo seletor correto se necessário
+        const containerPrincipal = document.querySelector(`.${containerId}`); // Substitua pelo seletor correto se necessário
     
         // Bloqueia os inputs com a classe bloqueado
         if(bloquear){
@@ -440,14 +491,6 @@ function verificarCadastros() {
             containerPrincipal.classList.remove("bloqueado");
         }
     }
-
-// resetar a página
-function resetar(){
-   location.reload();
-}
-
-
-
 
 
 
