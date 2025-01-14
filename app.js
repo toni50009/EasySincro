@@ -20,11 +20,14 @@ document.getElementById("num-grupos").addEventListener("input", function () {
     const botaoComparar = document.getElementById("botaoComparar");
 
     // Limpa os campos de entrada existentes
-    horariosInputs.innerHTML = "";
+     horariosInputs.innerHTML = "";
+
 
     // Atualiza os grupos com base no número selecionado
     atualizarGrupos(numGrupos);
+    
 
+    
     // Cria as divisões e inputs dos grupos
     if (numGrupos >= 2 && numGrupos <= 4) {
         for (let i = 1; i <= numGrupos; i++) {
@@ -42,6 +45,7 @@ document.getElementById("num-grupos").addEventListener("input", function () {
 
 // Atualiza o objeto "grupos" com o número de grupos especificado
 function atualizarGrupos(numGrupos) {
+    grupos = {};
     const novosGrupos = {};
     for (let i = 1; i <= numGrupos; i++) {
         novosGrupos[i] = grupos[i] || [];
@@ -287,20 +291,23 @@ function converterEmHoras(minutos) {
 
 // Função para verificar se os cadastros estão preenchidos
 function verificarCadastros() {
+    console.log(grupos);
     for (const grupoId in grupos) {
         const aulas = grupos[grupoId];
 
         // Verifica se o grupo está vazio
-        if (aulas.length === 0) {
+        if (aulas.length == 0) {
             criarMensagemErros(`O Grupo ${grupoId} está vazio!`, `quantidadeAulas-grupo${grupoId}`);
             return;
         }
 
         //Verifica se o horarioInicio é nulo ou vazio
-        if(!document.getElementById(`horarioInicio${grupoId}_1`).value){
+        if(document.getElementById(`horarioInicio${grupoId}_1`)){
+            if(document.getElementById(`horarioInicio${grupoId}_1`).value === "" || document.getElementById(`horarioInicio${grupoId}_1`).value === null){
             criarMensagemErros(`Informe o horário de início da primeira aula do grupo ${grupoId}!`,`horarioInicio${grupoId}_1`);
             return;
         } 
+    }
 
 
 
