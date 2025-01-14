@@ -81,16 +81,7 @@ function definirQtdAulas(grupoId) {
     }
     grupos[grupoId] = Array(qtdAulas).fill({ horarioInicio: null, duracao: 0, intervalo: 0 });
 
-        // Adiciona o campo para mostrar a soma após a última aula
-        const campoSoma = document.createElement("div");
-        campoSoma.className = `campoSoma${grupoId}`;
-        campoSoma.innerHTML = `
-            <div class="campo-soma">
-                <label for="somaFinalGrupo${grupoId}">Final do Turno do Grupo ${grupoId}:</label>
-                <input type="text" id="somaFinalGrupo${grupoId}" readonly class="input-soma-final">
-            </div>
-        `;
-        divGrupo.appendChild(campoSoma);
+
 }
 
 // Cria os campos de inputs para uma aula específica
@@ -275,12 +266,7 @@ function preencherProximosHorarios(checkAula, horarioAtualSomado, duracaoPadraoA
         horarioAtualSomado += proximaDuracao + proximoIntervaloValor;
         proximaAula++;
     }
-
-    const contadorQuantidadeAulas = document.getElementById(`quantidadeAulas-grupo${grupoId}`).value;
-    const ultimaAula = grupos[grupoId][contadorQuantidadeAulas - 1];
-    const somaFinal = converterEmMinutos(ultimaAula.horarioInicio) + ultimaAula.duracao;
-    const campoSomaFinal = document.getElementById(`somaFinalGrupo${grupoId}`);
-    campoSomaFinal.value = converterEmHoras(somaFinal);
+    
 }
 
 
