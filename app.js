@@ -89,8 +89,6 @@ function criarCampoAula(grupoId, aulaId, container, contador) {
     container.appendChild(campoInputs);
     restringirCampoInput(campoInputs, grupoId, aulaId, contador);
 
-    const labelIntervalo = campoInputs.querySelector(`label[for="duracaoIntervalo${grupoId}_${aulaId}"]`);
-    const inputIntervalo = campoInputs.querySelector(`#duracaoIntervalo${grupoId}_${aulaId}`);
 
 }
 
@@ -120,7 +118,7 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
             `;
 
         
-    }else if(aulaId > 1){
+    }else if(aulaId > 1 && aulaId != contador){
         campoInputs.innerHTML = `
         <div class="bloqueio-cadastro_${grupoId}_${aulaId}">
             <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
@@ -144,26 +142,33 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
         event.preventDefault();
     });
      bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${aulaId}`);
-        if(aulaId === contador ){
-            
-            campoInputs.innerHTML = `
-           <div class="bloqueio-cadastro_${grupoId}_${aulaId}">
-                <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
-                <input type="time" id="horarioInicio${grupoId}_${aulaId}">
-            
-                <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
-                <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
-            </div>
-                        `;
-    // Adiciona a mensagem de tooltip ao campo de horário
-     document.getElementById(`horarioInicio${grupoId}_${aulaId}`).addEventListener("keydown", (event) => {
-        criarMensagemErros(`Defina o horário de início somente na primeira aula!`, `horarioInicio${grupoId}_${aulaId}`);
-        event.preventDefault();
-    });
-                    
+
+            }else if(aulaId === contador){
+                campoInputs.innerHTML = `
+                <div class="bloqueio-cadastro_${grupoId}_${aulaId}">
+                    <label for="horarioInicio${grupoId}_${aulaId}">Horário de início <strong>${aulaId}</strong>ªAula:</label>
+                    <input type="time" id="horarioInicio${grupoId}_${aulaId}">
+                
+                    <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
+                    <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
+                
+                        <div class="intervalo-container" style="display: none;">
+                            
+                            <label for="duracaoIntervalo${grupoId}_${aulaId}"  >Duração intervalo(se houver):</label>
+                            <input type="number" id="duracaoIntervalo${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" class="input-pequeno" >
+                       
+                            </div>
+                </div>
+                            `
+                        ;
+             // Adiciona a mensagem de tooltip ao campo de horário
+             document.getElementById(`horarioInicio${grupoId}_${aulaId}`).addEventListener("keydown", (event) => {
+                criarMensagemErros(`Defina o horário de início somente na primeira aula!`, `horarioInicio${grupoId}_${aulaId}`);
+                event.preventDefault();
+            });
              bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${aulaId}`);
-        }
-            }
+        
+                    }
 
 
 }
@@ -192,6 +197,8 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
         return;
     };
 
+    
+
     // Converte o horário atual para minutos
     const horarioAtualEmMinutos = converterEmMinutos(horarioAtual);
 
@@ -202,70 +209,67 @@ function atualizarHorariosDeInicio(checkAula, grupoId) {
         intervalo: intervaloAtual,
     };
 
-
-    //Checar no Console
-    console.log(grupos);
-
     
+    if(checkAula === grupos[grupoId].length){
+        return;
+    }
+
 
     // Soma a duração da aula e o intervalo
     const somaDuracao = horarioAtualEmMinutos + duracaoAtual + intervaloAtual;
 
     // Chama a função para preencher os próximos horários e durações
-    preencherProximosHorarios(checkAula, somaDuracao, duracaoAtual, grupoId, intervaloAtual);
+    preencherProximosHorarios(checkAula, somaDuracao, duracaoAtual, grupoId);
 }
 
 
 //preencher os próximos horários e atualizar a array grupos
-function preencherProximosHorarios(checkAula, horarioAtualEmMinutos, duracaoPadraoAula, grupoId, checkIntervalo) {
+function preencherProximosHorarios(checkAula, horarioAtualSomado, duracaoPadraoAula, grupoId) {
     let proximaAula = checkAula + 1;
+
+
 
     while (document.getElementById(`horarioInicio${grupoId}_${proximaAula}`)) {
         const proximoHorarioInput = document.getElementById(`horarioInicio${grupoId}_${proximaAula}`);
         const proximaDuracaoInput = document.getElementById(`duracao${grupoId}_${proximaAula}`);
         const proximoIntervaloInput = document.getElementById(`duracaoIntervalo${grupoId}_${proximaAula}`);
 
+
+
         if(checkAula == 1){
-            if(horarioAtualEmMinutos && duracaoPadraoAula > 0){
+            if(horarioAtualSomado && duracaoPadraoAula > 0){
                 bloquearInteracao(false,`bloqueio-cadastro_${grupoId}_${proximaAula}`);
             }
         }
 
         // Preenche o próximo horário
-        proximoHorarioInput.value = converterEmHoras(horarioAtualEmMinutos);
+        proximoHorarioInput.value = converterEmHoras(horarioAtualSomado);
 
         // Atualiza a duração padrão para os campos subsequentes
         proximaDuracaoInput.value = duracaoPadraoAula || "";
 
+        //trata o intervalo
+        const proximoIntervaloValor = proximoIntervaloInput ? parseInt(proximoIntervaloInput.value) || 0 : 0;
 
 
         // Incrementa o horário com a duração e o intervalo
         const proximaDuracao = parseInt(proximaDuracaoInput.value) || duracaoPadraoAula;
 
-        console.log(grupos);
-        if(checkIntervalo > 0){
 
-            if(grupos[grupoId][proximaAula - 1].intervalo > 0){
-                grupos[grupoId][proximaAula - 1] = {
-                    horarioInicio: converterEmHoras(horarioAtualEmMinutos),
-                    duracao: proximaDuracao,
-                    intervalo: proximoIntervaloInput,
-                }
-            }else{
-                grupos[grupoId][proximaAula - 1] = {
-                    horarioInicio: converterEmHoras(horarioAtualEmMinutos),
-                    duracao: proximaDuracao,
-                    intervalo:0,
-            }
+        //atualiza o grupo
+        grupos[grupoId][proximaAula - 1] = {
+            horarioInicio: converterEmHoras(horarioAtualSomado),
+            duracao: proximaDuracao,
+            intervalo: proximoIntervaloValor,
+        }
 
-    }
-
-
-        horarioAtualEmMinutos += proximaDuracao;
+        // atualiza o horário somado
+        horarioAtualSomado += proximaDuracao + proximoIntervaloValor;
         proximaAula++;
     }
+    console.log(grupos);
 }
-}
+
 
 // Função para converter horário no formato HH:MM para minutos
 function converterEmMinutos(horario) {
@@ -330,10 +334,6 @@ function verificarCadastros() {
                         if(duracaoIntervaloInput  && duracaoIntervaloInput.value < 0 ){
                             document.getElementById("campo-erro").classList.remove("invisivel");
                             criarMensagemErros(`A duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId} não pode ser negativa!`, `duracaoIntervalo${grupoId}_${aulaId}`);
-                            return;
-                        }else if(duracaoIntervaloInput.value == 0){
-                            document.getElementById("campo-erro").classList.remove("invisivel");
-                            criarMensagemErros(`Informe a duração do intervalo depois da ${aulaId}ª aula do grupo ${grupoId}.`, `duracaoIntervalo${grupoId}_${aulaId}`);
                             return;
                         }
                     }
