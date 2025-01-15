@@ -12,7 +12,7 @@ input[type=number] {
 
 
 :root { 
-    --cor-fundo-body: #e3fce4; /* Fundo verde claro */
+    --cor-fundo-body: #d5e2d8; /* Fundo verde claro */
     --cor-fundo-container: #c8e6c9; /* Verde suave */
     --cor-texto-container: #023b02; /* Verde escuro */
     --cor-primaria: #388e3c; /* Verde médio */
