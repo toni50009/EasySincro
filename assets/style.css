@@ -1,8 +1,20 @@
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+  }
+
 
 :root { 
-    --cor-fundo-body: #e8f5e9; /* Fundo verde claro */
+    --cor-fundo-body: #e3fce4; /* Fundo verde claro */
     --cor-fundo-container: #c8e6c9; /* Verde suave */
-    --cor-texto-container: #1b5e20; /* Verde escuro */
+    --cor-texto-container: #023b02; /* Verde escuro */
     --cor-primaria: #388e3c; /* Verde médio */
     --cor-acento: #66bb6a; /* Verde brilhante */
     --cor-hover: #43a047; /* Verde escuro no hover */
@@ -15,18 +27,22 @@
     box-sizing: border-box;
 }
 
+
+
+
 body {
+    margin: 0;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    font-size: 16px;
+    font-size: 20px;
     background-color: var(--cor-fundo-body);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+
 }
 
+
 .container {
-    width: 100%;
+    min-width: 100%;
     padding: 0.2rem;
     border: 2px solid var(--cor-primaria);
     border-radius: 10px;
@@ -35,6 +51,19 @@ body {
     box-shadow: 0 4px 8px var(--sombra);
 }
 
+.centerInput{
+    display: flex;
+    flex-direction: column;
+    padding: 0.3rem;
+    align-items: center;
+    justify-content: center;
+}
+
+#num-grupos{
+    display: flex;
+    width: 3rem;
+    height: 1rem;
+}
 
 .container-erro {
     position: fixed;
@@ -80,6 +109,7 @@ h1 {
     color: var(--cor-primaria);
     font-size: 2rem;
     margin-bottom: 1rem;
+    border-bottom: 2px solid #43a047;
 }
 
 #conteudo-form{
@@ -109,6 +139,7 @@ h1 {
     border: 0.3rem solid var(--cor-acento);
     border-style: outset;
 }
+
 
 .slct{
     width: 100%;
