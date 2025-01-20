@@ -383,13 +383,13 @@ function verificarCadastros() {
                         // Faz a comparação e adiciona os resultados
                         if (inicioAulaGrupo2 < inicioProximaAulaGrupo1) {
                             resultadosDiv.innerHTML += `
-                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, pode ter a próxima aula com turma do Grupo ${gruposIds[j]}? <span class="vermelho">NÃO</span></p>`;
+                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo <strong>${gruposIds[i]}</strong>, pode ter a próxima aula com turma do Grupo <strong>${gruposIds[j]}</strong>?><span style="color: red;">NÃO</span></p>`;
                         } else if((inicioAulaGrupo2 - inicioProximaAulaGrupo1) > 20 ) {
                             resultadosDiv.innerHTML += `
-                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, pode  ter a próxima aula com turma do Grupo ${gruposIds[j]}? <span class="vermelho">É RUIM</span></p>`;
+                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo <strong>${gruposIds[i]}</strong>, pode  ter a próxima aula com turma do Grupo <strong>${gruposIds[j]}</strong>?><span  style="color: red;" >É RUIM</span></p>`;
                         }  else{
                             resultadosDiv.innerHTML += `
-                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo ${gruposIds[i]}, pode  ter a próxima aula com turma do Grupo ${gruposIds[j]}? <span class="verde">SIM</span></p>`;
+                                <p>Se na ${k + 1}ª Aula o professor tiver aula com turma do Grupo <strong>${gruposIds[i]}</strong>, pode  ter a próxima aula com turma do Grupo <strong>${gruposIds[j]}</strong>?><span style="color: green;">SIM</span></p>`;
                         }
 
                     }

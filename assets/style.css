@@ -123,7 +123,7 @@ h1 {
 
 p {
     margin: 1rem 0;
-    line-height: 1.6;
+    line-height: 1;
     color: var(--cor-texto-container);
 }
 
@@ -210,7 +210,7 @@ input[type="number"].input-pequeno{
     padding: 1.5rem;
     border: 1px solid var(--cor-primaria);
     border-radius: 10px;
-    background-color: var(--cor-fundo-container);
+    background-color: rgb(222, 229, 222);
     box-shadow: 0 4px 6px var(--sombra);
 }
 
@@ -218,13 +218,6 @@ input[type="number"].input-pequeno{
     display: none;
 }
 
-.vermelho{
-    color: red;
-}
-
-.verde{
-    color:green;
-}
 
 
 #campo-resultados{
