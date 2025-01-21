@@ -122,7 +122,7 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
         </div>
             `;
 
-        
+        // as demais aulas
     }else if(aulaId > 1 && aulaId != contador){
         campoInputs.innerHTML = `
         <div class="bloqueio-cadastro_${grupoId}_${aulaId}">
@@ -148,6 +148,7 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
     });
      bloquearInteracao(true,`bloqueio-cadastro_${grupoId}_${aulaId}`);
 
+            //última aula        
             }else if(aulaId === contador){
                 campoInputs.innerHTML = `
                 <div class="bloqueio-cadastro_${grupoId}_${aulaId}">
@@ -157,6 +158,9 @@ function restringirCampoInput(campoInputs, grupoId, aulaId, contador){
                     <label for="duracao${grupoId}_${aulaId}">Duração da aula:</label>
                     <input type="number" id="duracao${grupoId}_${aulaId}" onKeyPress="if(this.value.length==3) return false;" max="200" oninput="atualizarHorariosDeInicio(${aulaId}, ${grupoId})">
                 
+                    <section id="ultima-aula${grupoId}">
+                    </section>
+
                         <div class="intervalo-container" style="display: none;">
                             
                             <label for="duracaoIntervalo${grupoId}_${aulaId}"  >Duração intervalo(se houver):</label>
@@ -232,6 +236,7 @@ function preencherProximosHorarios(checkAula, horarioAtualSomado, duracaoPadraoA
     let proximaAula = checkAula + 1;
 
 
+
     while (document.getElementById(`horarioInicio${grupoId}_${proximaAula}`)) {
         const proximoHorarioInput = document.getElementById(`horarioInicio${grupoId}_${proximaAula}`);
         const proximaDuracaoInput = document.getElementById(`duracao${grupoId}_${proximaAula}`);
@@ -270,7 +275,11 @@ function preencherProximosHorarios(checkAula, horarioAtualSomado, duracaoPadraoA
         horarioAtualSomado += proximaDuracao + proximoIntervaloValor;
         proximaAula++;
     }
-    
+
+
+        document.getElementById(`ultima-aula${grupoId}`).innerHTML = `
+        Final ${converterEmHoras(horarioAtualSomado)}
+        `;
 }
 
 
